@@ -14,13 +14,15 @@ var eslint = require('gulp-eslint');
 var uglify = require('gulp-uglify');
 var minifyHTML = require('gulp-minify-html');
 var minifyInline = require('gulp-minify-inline');
+var browserSync = require('browser-sync').create();
 var del = require('del');
 
 // Lint JavaScript
 gulp.task('lint', function() {
     return gulp.src('dev/js/*.js')
                .pipe(eslint())
-               .pipe(eslint.failAfterError());
+               .pipe(eslint.failAfterError())
+               .pipe(browserSync.stream());
 });
 
 // Minify HTML and inline scripts and CSS
@@ -33,9 +35,17 @@ gulp.task('minifyhtml', function() {
 
 // Compile Sass
 gulp.task('sass', function () {
-  return gulp.src('dev/css/*.scss')
+  return gulp.src('dev/scss/*.scss')
              .pipe(sass({outputStyle: 'compressed'}))
              .pipe(gulp.dest('dist/css'));
+});
+
+// Compile Sass
+gulp.task('sass-serve', function () {
+  return gulp.src('dev/scss/*.scss')
+             .pipe(sass.sync().on('error', sass.logError))
+             .pipe(gulp.dest('dev/css'))
+             .pipe(browserSync.stream());
 });
 
 // Minify JavaScript
@@ -81,15 +91,19 @@ gulp.task('default', ['lint', 'sass', 'minifyhtml', 'minifyjs', 'moveimages']);
 
 // Watch HTML, Sass, JavaScript files and update on change
 // Since this is for dev, we don't minify the js for debugging
-gulp.task('watch', function() {
+gulp.task('serve', function() {
+
+    browserSync.init({
+        server: "./dev"
+    });
+
   // Watch Sass files and update
-  gulp.watch('dev/css/*.scss', ['sass']);
+  gulp.watch('dev/scss/*.scss', ['sass-serve']);
 
-  // Watch HTML files and minify output
-  gulp.watch('dev/*.html', ['minifyhtml']);
+  // Watch js files and lint
+  gulp.watch('dev/js/*.js', ['lint']);
 
-  // Watch js files and lint and move output
-  gulp.watch('dev/js/*.js', ['lint', 'movejs']);
+  gulp.watch("dev/**/*.html").on('change', browserSync.reload);
 });
 
 // Prepare for actual dist, clean the directory, then build and minify
