@@ -30,7 +30,7 @@ button {
     background-repeat: no-repeat;
     background-size: contain;
   }
-  input:checked + label {
+  input[type=checkbox]:checked + label {
     background-image: $checkbox-checked-svg;
   }
 }
@@ -67,10 +67,9 @@ button {
 .btn {
   margin-top: 1em;
   padding: 0.5em 1em;
+  outline: none;
 }
 
 .btn-primary {
-  color: white;
-  border-color: #0fa13d;
-  background-color: #12b043;
+  @include button-style(white, $button-primary-color);
 }

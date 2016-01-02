@@ -1,5 +1,33 @@
+header {
+  background-color: $brand-primary-color;
+  margin-bottom: 2em;
+}
+
 .container {
   width: $max-layout-width;
   max-width: 90%;
   margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  h1 {
+    color: $secondary-brand-color;
+  }
+}
+
+.header-menu {
+  li {
+    display: inline;
+    padding-right: 0.5em;
+  }
+  li:last-child {
+    padding-right: 0;
+  }
+  a {
+    color: $header-nav-color;
+  }
 }
