@@ -40,6 +40,20 @@ button {
   input {
     display: block;
   }
+  .inp-lrg,
+  .btn-lrg {
+    width: 100%;
+  }
+
+  .inp-med,
+  .btn-med {
+    width: 66%;
+  }
+
+  .inp-sm,
+  .btn-sm {
+    width: 33%;
+  }
 }
 
 .inp-grp-horiz {
@@ -47,21 +61,23 @@ button {
   input {
     display: inline-block;
   }
-}
+  label {
+    width: 30%;
+  }
+  .inp-lrg,
+  .btn-lrg {
+    width: 67.5%;
+  }
 
-.inp-lrg,
-.btn-lrg {
-  width: 100%;
-}
+  .inp-med,
+  .btn-med {
+    width: 50%;
+  }
 
-.inp-med,
-.btn-med {
-  width: 66%;
-}
-
-.inp-sm,
-.btn-sm {
-  width: 33%;
+  .inp-sm,
+  .btn-sm {
+    width: 30%;
+  }
 }
 
 .btn {
@@ -71,5 +87,6 @@ button {
 }
 
 .btn-primary {
+  @extend .btn;
   @include button-style(white, $button-primary-color);
 }
