@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="no-js">
   <head lang="en">
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A fake events app for creating awesome fake events.">
     <link rel="stylesheet" href="css/style.css">
+    <script>
+      /* Test for js */
+      (function(h){
+        h.className = h.className.replace('no-js', 'js')
+      })(document.documentElement)
+    </script>
   </head>
   <body>
     <header>
@@ -23,27 +29,95 @@
     <main class="container-horizontal">
       <section class="formsection">
         <h2>Sign Up for Evntr</h2>
-        <form action="">
+        <form id="signup-form" action="" novalidate>
           <div class="inp-grp">
-            <label for="user-name">What's your full name?</label>
-            <input type="text" name="user-name" id="user-name" class="inp-lrg" autofocus>
+            <label for="user-name" class="inp-label-req">What's your full name?</label>
+            <input type="text" name="user-name" id="user-name" class="inp-lrg" required autofocus>
+            <p class="error"></p>
           </div>
           <div class="inp-grp">
-            <label for="user-email">What's your email address?</label>
-            <input type="email" name="user-email" class="inp-lrg" id="user-email" placeholder="e.g., sue@example.com" autocomplete="email">
+            <label for="user-email" class="inp-label-req">What's your email address?</label>
+            <input type="email" name="user-email" class="inp-lrg" id="user-email" placeholder="e.g., sue@example.com" autocomplete="email" required>
+            <p class="error"></p>
           </div>
           <div class="inp-grp">
-            <label for="user-pw">Create a secure password</label>
-            <input type="password" name="user-pw" class="inp-lrg" id="user-pw">
+            <label for="user-pw" class="inp-label-req">Create a secure password</label>
+            <div class="inp-grp-compound"><input type="password" name="user-pw" class="inp-lrg pw-mod-inp" id="user-pw" required><button type="button" id="show-pw" class="btn-secondary-function pw-mod-button">Show</button></div>
+            <label for="user-pw" class="inp-label-instr">At least 10 characters including a lowercase and uppercase letter, number, and special character.</label>
+            <p class="error" id="user-pw-error"></p>
           </div>
           <div class="inp-grp">
             <input type="checkbox" name="spam-me" id="spam-me">
             <label for="spam-me">Can we spam you?</label>
           </div>
-          <input type="submit" class="btn-primary btn-lrg" value="Sign up">
+          <hr>
+          <div class="inp-grp">
+            <label for="user-company" class="inp-label-opt">Company name</label>
+            <input type="text" name="user-company" id="user-company" class="inp-lrg">
+          </div>
+          <div class="inp-grp">
+            <label for="user-bday" class="inp-label-opt">What's your birthday?</label>
+            <input type="date" name="user-bday" id="user-bday" class="inp-lrg">
+          </div>
+          <input type="submit" id="submit" class="btn-primary btn-lrg" value="Sign up">
         </form>
       </section>
     </main>
     <script src="js/app.js"></script>
+    <script>
+      if (HTMLInputElement.prototype.checkValidity) {
+        var pwInput = document.getElementById('user-pw');
+        var validationModule = ValidationModule();
+
+        pwInput.addEventListener('keyup', function(e) {
+          var message = '';
+          var errors = [];
+          var pwText = e.target.value;
+          if (pwText.length < 10) {
+            errors.push('Must be at least 10 characters');
+          }
+          if (!pwText.match(/[A-Z]/)) {
+            errors.push('Requires an uppercase letter');
+          }
+          if (!pwText.match(/[a-z]/)) {
+            errors.push('Requires a lowercase letter');
+          }
+          if (!pwText.match(/[0-9]/)) {
+            errors.push('Requires a number');
+          }
+          if (!pwText.match(/[!@#$%&]/)) {
+            errors.push('Requires one of these special characters: ! @ # $ % &');
+          }
+          if (errors.length === 1) {
+            message = errors[0];
+          } else if (errors.length > 1) {
+            message = 'Password must meet these requirements:<ul>';
+            for (var i = 0; i < errors.length; i++) {
+              message += '<li>' + errors[i] + '</li>';
+            }
+            message += '</ul>';
+          }
+          e.target.setCustomValidity(message);
+        });
+
+
+        validationModule.initValidation(document.getElementById('signup-form'),
+          document.getElementById('submit'));
+      }
+
+      /* Wire up the show/hide password module */
+      (function(inp, but) {
+        but.addEventListener('click', function(e) {
+          if (inp.getAttribute('type') === 'password') {
+            inp.setAttribute('type', 'text');
+            but.innerHTML = 'Hide';
+          } else {
+            inp.setAttribute('type', 'password');
+            but.innerHTML = 'Show';
+          }
+        });
+      })(document.getElementById('user-pw'),
+        document.getElementById('show-pw'));
+    </script>
   </body>
 </html>
