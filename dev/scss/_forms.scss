@@ -4,7 +4,8 @@ input {
 }
 
 input,
-button {
+button,
+a.btn {
   border: 1px solid #bfbfbf;
   border-radius: 4px;
 }
@@ -40,29 +41,30 @@ button {
   input {
     display: block;
   }
-  .inp-lrg,
-  .btn-lrg {
-    width: 100%;
-  }
+}
 
-  .inp-med,
-  .btn-med {
-    width: 66%;
-  }
+.inp-lrg,
+.btn-lrg {
+  width: 100%;
+}
 
-  .inp-sm,
-  .btn-sm {
-    width: 33%;
-  }
+.inp-med,
+.btn-med {
+  width: 66%;
+}
+
+.inp-sm,
+.btn-sm {
+  width: 33%;
 }
 
 .inp-grp-horiz {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   label,
   input {
     display: inline-block;
-  }
-  label {
-    width: 30%;
   }
   .inp-lrg,
   .btn-lrg {
@@ -80,13 +82,95 @@ button {
   }
 }
 
+.inp-grp-compound {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.inp-grp-compound__left {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+}
+
+.inp-grp-compound__right {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.inp-label-req {
+  &:after {
+    font-weight: bold;
+    color: #c30909;
+    content: " *";
+  }
+}
+
+.inp-label-opt {
+  &:after {
+    color: #919191;
+    font-size: 0.8em;
+    content: " (optional)";
+  }
+}
+
+.inp-label-instr {
+  font-size: 0.8em;
+  color: #818181;
+}
+
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
 .btn {
-  margin-top: 1em;
-  padding: 0.5em 1em;
+  padding: 0.45em 1em;
   outline: none;
 }
 
 .btn-primary {
   @extend .btn;
   @include button-style(white, $button-primary-color);
+  &:disabled {
+    @include button-style(#5d5d5d, #a4a4a4);
+  }
+}
+
+.btn-function {
+  @extend .btn;
+  @include button-style(white, #0a4efb);
+}
+
+.btn-secondary-function {
+  @extend .btn;
+  @include button-style(white, #4971d7);
+}
+
+.pw-mod-inp {
+  @extend .inp-grp-compound__left;
+}
+
+.pw-mod-button {
+  @extend .inp-grp-compound__right;
+  width: 5.75em;
+}
+
+.no-js {
+  .pw-mod-inp {
+    border-right: 1px solid #bfbfbf;
+  }
+
+  .pw-mod-button {
+    display: none;
+  }
+}
+
+.error {
+  color: red;
+  font-size: 0.8em;
+  padding: 0;
+  margin-top: 0;
 }
