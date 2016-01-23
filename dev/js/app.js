@@ -41,6 +41,8 @@ var FauxBackendModule = function(global) {
 
 var ValidationModule = function() {
 
+  'use strict';
+
   var globalAPI = {};
   var _cache = {};
 
@@ -59,7 +61,7 @@ var ValidationModule = function() {
       }
       button.removeAttribute('disabled');
     });
-    form.addEventListener('focusout', function(e) {
+    form.addEventListener('blur', function(e) {
       _setValidityMessage(e.target);
       if (_cache.hasOwnProperty(e.target.id)) {
         _cache[e.target.id].haslostfocus = true;
@@ -67,7 +69,7 @@ var ValidationModule = function() {
         _cache[e.target.id] = {};
         _cache[e.target.id].haslostfocus = true;
       }
-    });
+    }, true);
   };
 
   var _setValidityMessage = function(inputElement) {
