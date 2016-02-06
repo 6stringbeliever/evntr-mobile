@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="no-js">
   <head lang="en">
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A fake events app for creating awesome fake events.">
     <link rel="stylesheet" href="css/style.css">
+    <script>
+      /* Test for js */
+      (function(h){
+        h.className = h.className.replace('no-js', 'js')
+      })(document.documentElement)
+    </script>
   </head>
   <body>
     <header>
@@ -20,30 +26,194 @@
         </nav>
       </div>
     </header>
+    <!--
+
+    2) The app should allow users to create a new event. Each event should, at a minimum, allow a user to set:
+
+    x Name of the event
+    x Type of the event (birthday party, conference talk, wedding, etc.)
+    x Event host (could be an individual’s name or an organization)
+    Event start date and time
+    Event end date and time
+    * Guest list
+    Location
+    x Optional message to the guests with additional information about the event
+    -->
     <main class="container-horizontal">
       <section class="formsection">
-        <h2>Sign Up for Evntr</h2>
-        <form action="">
+        <h2>Create a New Event</h2>
+        <h3>Event Details</h3>
+        <form action="" id="create-event" novalidate>
           <div class="inp-grp">
-            <label for="event-name">What's your full name?</label>
-            <input type="text" name="event-name" id="event-name" class="inp-lrg" autofocus>
+            <label for="event-name">What's the name of the event?</label>
+            <input type="text" name="event-name" id="event-name" class="inp-lrg" placeholder="e.g., Porkfest 2016" autofocus>
           </div>
           <div class="inp-grp">
-            <label for="user-email">What's your email address?</label>
-            <input type="email" name="user-email" class="inp-lrg" id="user-email" placeholder="e.g., sue@example.com" autocomplete="email">
+            <label for="event-host">Who is the host of the event?</label>
+            <input type="text" name="event-host" id="event-host" class="inp-lrg" placeholder="Person or organization name">
           </div>
           <div class="inp-grp">
-            <label for="user-pw">Create a secure password</label>
-            <input type="password" name="user-pw" class="inp-lrg" id="user-pw">
+            <label for="event-type">What is the purpose of the event?</label>
+            <input list="event-type-list" name="event-type" id="event-type" class="inp-lrg" placeholder="e.g., Birthday, Business Meeting">
+            <datalist id="event-type-list">
+              <option value="Birthday" />
+              <option value="Book Club" />
+              <option value="Business Meeting" />
+              <option value="Concert" />
+              <option value="Corporate Retreat" />
+              <option value="Meetup" />
+              <option value="Pork Festival" />
+              <option value="Speed Dating" />
+            </datalist>
           </div>
-          <div class="inp-grp">
-            <input type="checkbox" name="spam-me" id="spam-me">
-            <label for="spam-me">Can we spam you?</label>
+          <hr />
+          <div>
+            <h3>When is the event?</h3>
+            <div class="inp-grp-horiz">
+              <label for="event-date">Date</label>
+              <input type="date" name="event-date" class="inp-lrg" id="event-date">
+            </div>
+            <div class="inp-grp">
+              <input type="checkbox" id="event-all-day" name="event-all-day">
+              <label for="event-all-day">All day?</label>
+            </div>
+            <div class="inp-grp-horiz">
+              <label for="event-time">Time</label>
+              <input type="time" name="event-time" class="inp-lrg" id="event-time">
+            </div>
+            <div class="inp-grp-horiz">
+              <label for="event-length">Length</label>
+              <input type="number" min="0" step="15" name="event-length" class="inp-sm" id="event-length"><label>min</label>
+            </div>
           </div>
-          <input type="submit" class="btn-primary btn-lrg" value="Sign up">
+          <hr/>
+          <div>
+            <h2>Where is the event?</h2>
+            <button class="btn-function" id="btn-near-me" type="button">Get suggestions near me</button>
+            <p>or</p>
+            <div class="inp-grp-horiz">
+              <label for="event-near-zip">Near ZIP code</label>
+              <input type="text" name="event-near-zip" class="inp-sm" id="event-near-zip" autocomplete="email">
+              <button type="button" class="btn-function" id="btn-near-zip">Get suggestions</button>
+            </div>
+            <p>or</p>
+            <div class="inp-grp">
+              <label for="event-loc">Enter the location.</label>
+              <input type="text" name="event-loc" id="event-loc" class="inp-lrg" placeholder="Person or organization name">
+            </div>
+            <input type="hidden" id="event-loc-pic" name="event-loc-pic">
+          </div>
+          <hr />
+          <div>
+            <h2>Guest List</h2>
+            <div class="inp-grp">
+              <label for="event-guest">Add a guest by email</label>
+              <div class="inp-grp-compound">
+                <input type="email" id="event-guest" name="event-guest" class="inp-grp-compound__left" placeholder="guest@example.com"><button class="inp-grp-compound__right btn-secondary-function" id="add-guest" type="button">Add</button>
+              </div>
+              <div id="guest-list"></div>
+            </div>
+          </div>
+          <hr />
+          <div>
+            <h2>Anything else you need to tell your guests?</h2>
+            <div class="inp-grp">
+              <label for="event-msg">Enter any additional details for your guests</label>
+              <textarea id="event-msg" class="inp-lrg" name="event-msg"></textarea>
+            </div>
+          </div>
+
+          <input type="submit" id="submit" class="btn-primary btn-lrg" value="Create event">
         </form>
       </section>
     </main>
     <script src="js/app.js"></script>
+    <script>
+      var validation = ValidationModule();
+
+      validation.initValidation(document.getElementById('create-event'),
+        document.getElementById('submit'));
+
+      // Guest list module
+      (function(global, addButton, emailField, listDiv) {
+        'use strict';
+
+        var guests = [];
+
+        var _getGuestListHTML = function() {
+          var output = '';
+          if (guests.length >= 1) {
+            output += '<ul class="event-guest-list">';
+            for (var i = 0; i < guests.length; i++) {
+              output += '<li>' + guests[i] + ' ';
+              output += '<button id="del-guest-' + i;
+              output += '" type="button">Remove</button>';
+              output += '<input type="hidden" name="event-guests-' + i + '" ';
+              output += 'value="' + guests[i] + '">';
+              output += '</li>';
+            }
+            output += '</ul>';
+          }
+          return output;
+        };
+
+        addButton.setAttribute('disabled', 'true');
+
+        emailField.addEventListener('keyup', function() {
+          if (emailField.checkValidity()) {
+            addButton.removeAttribute('disabled');
+          } else {
+            addButton.setAttribute('disabled', 'true');
+          }
+        });
+
+        addButton.addEventListener('click', function() {
+          if (emailField.checkValidity()) {
+            guests.push(emailField.value);
+            emailField.value = '';
+            listDiv.innerHTML = _getGuestListHTML();
+          }
+        });
+
+        listDiv.addEventListener('click', function(e) {
+          var reg = /del-guest-([0-9]+)/;
+          var match = reg.exec(e.target.id);
+          if (match !== null) {
+            guests.splice(match[1], 1);
+            listDiv.innerHTML = _getGuestListHTML();
+          }
+        });
+
+      })(window,
+        document.getElementById('add-guest'),
+        document.getElementById('event-guest'),
+        document.getElementById('guest-list'));
+
+      (function(global) {
+        'use strict';
+
+        var reqDataBtn = document.getElementById('btn-near-me');
+        reqDataBtn.addEventListener('click', function(event) {
+        var query = "https://api.foursquare.com/v2/venues/explore?ll=44.3,37.2" +
+                "&client_id=HPTKFD3QU12Y0FPPQ0OVTZ51RFAYJ5L4104MNJJL0CW2HEEQ" +
+                "&client_secret=YLBK5PYZW4FZNK0QIQX5SCJOQS4TYYEHR2LZ2SHYGJLXJCLE" +
+                "&v=20130815";
+
+        var backend = FauxBackendModule(global);
+
+          fetch(query)
+          .then(function(response){
+            if(response.ok) {
+              console.log('good job');
+              response.json().then(function(json) {
+                console.log(json);
+              });
+            }
+          });
+          event.preventDefault();
+        });
+
+      })(window);
+    </script>
   </body>
 </html>

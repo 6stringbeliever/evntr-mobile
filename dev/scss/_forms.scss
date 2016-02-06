@@ -48,6 +48,10 @@ a.btn {
   width: 100%;
 }
 
+textarea.inp-lrg {
+  height: 200px;
+}
+
 .inp-med,
 .btn-med {
   width: 66%;
@@ -129,14 +133,14 @@ a.btn {
 .btn {
   padding: 0.45em 1em;
   outline: none;
+  &:disabled {
+    @include button-style(#5d5d5d, #a4a4a4);
+  }
 }
 
 .btn-primary {
   @extend .btn;
   @include button-style(white, $button-primary-color);
-  &:disabled {
-    @include button-style(#5d5d5d, #a4a4a4);
-  }
 }
 
 .btn-function {

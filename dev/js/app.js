@@ -45,6 +45,7 @@ var ValidationModule = function() {
 
   var globalAPI = {};
   var _cache = {};
+  var _messages = {};
 
   var initValidation = function(form, button) {
     var formElements = form.getElementsByTagName('input');
@@ -72,19 +73,32 @@ var ValidationModule = function() {
     }, true);
   };
 
+  var setCustomMessages = function(messages) {
+    _messages = messages;
+  };
+
   var _setValidityMessage = function(inputElement) {
     var errorField = _getErrorElement(inputElement);
     if (!inputElement.checkValidity()) {
-      errorField.innerHTML = inputElement.validationMessage;
+      errorField.innerHTML = _getValidityMessage(inputElement);
     } else if (errorField !== null) {
       errorField.innerHTML = '';
     }
   };
 
+  var _getValidityMessage = function(inputElement) {
+    var msg;
+    if (_messages.hasOwnProperty(inputElement.validationMessage)) {
+      msg = _messages[msg];
+    } else {
+      msg = inputElement.validationMessage;
+    }
+    return msg;
+  };
+
   var _getErrorElement = function(inputNode) {
     var inputNodeId = inputNode.id;
     var errorFieldById = document.getElementById(inputNodeId + '-error');
-    // TODO cache error field, maybe, or is that premature optimization?
     if (inputNodeId && errorFieldById !== null) {
       return errorFieldById;
     } else {
@@ -93,7 +107,8 @@ var ValidationModule = function() {
   };
 
   globalAPI = {
-    'initValidation': initValidation
+    'initValidation': initValidation,
+    'setCustomMessages': setCustomMessages
   };
 
   return globalAPI;
