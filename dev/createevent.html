@@ -67,23 +67,31 @@
             </datalist>
           </div>
           <hr />
-          <div>
+          <div id="event-date-time">
             <h3>When is the event?</h3>
-            <div class="inp-grp-horiz">
-              <label for="event-date">Date</label>
-              <input type="date" name="event-date" class="inp-lrg" id="event-date">
-            </div>
+            <p>Start Time</p>
+              <div class="inp-grp">
+                <label for="event-date-st">Date</label>
+                <input type="date" name="event-date-st" class="inp-lrg" id="event-date-st">
+              </div>
+              <div class="inp-grp">
+                <label for="event-time-st">Time</label>
+                <input type="time" name="event-time-st" class="inp-lrg" id="event-time-st">
+              </div>
+
+
             <div class="inp-grp">
               <input type="checkbox" id="event-all-day" name="event-all-day">
               <label for="event-all-day">All day?</label>
             </div>
-            <div class="inp-grp-horiz">
-              <label for="event-time">Time</label>
-              <input type="time" name="event-time" class="inp-lrg" id="event-time">
+            <p>End Time</p>
+            <div class="inp-grp">
+              <label for="event-date-end">Date</label>
+              <input type="date" name="event-date-end" class="inp-lrg" id="event-date-end">
             </div>
-            <div class="inp-grp-horiz">
-              <label for="event-length">Length</label>
-              <input type="number" min="0" step="15" name="event-length" class="inp-sm" id="event-length"><label>min</label>
+            <div class="inp-grp">
+              <label for="event-time-end">Time</label>
+              <input type="time" name="event-time-end" class="inp-lrg" id="event-time-end">
             </div>
           </div>
           <hr/>
@@ -135,7 +143,7 @@
         document.getElementById('submit'));
 
       // Guest list module
-      (function(global, addButton, emailField, listDiv) {
+      (function(addButton, emailField, listDiv) {
         'use strict';
 
         var guests = [];
@@ -184,11 +192,97 @@
           }
         });
 
-      })(window,
-        document.getElementById('add-guest'),
+      })(document.getElementById('add-guest'),
         document.getElementById('event-guest'),
         document.getElementById('guest-list'));
 
+      // Event time module
+      (function(startDateField, startTimeField, endDateField,
+        endTimeField, allDayField, dateTimeSection) {
+
+        var startTime = resetStartTime();
+        var endTime = resetEndTime(startTime);
+
+        setDateTimeFields(startTime, startDateField, startTimeField);
+        setDateTimeFields(endTime, endDateField, endTimeField);
+
+        allDayField.addEventListener('click', function(e) {
+          if (e.target.checked) {
+            startTimeField.parentNode.style.display = 'none';
+            endTimeField.parentNode.style.display = 'none';
+          } else {
+            startTimeField.parentNode.style.display = 'block';
+            endTimeField.parentNode.style.display = 'block';
+          }
+        });
+
+        dateTimeSection.addEventListener('focusout', function(e) {
+          var startTime;
+          var endTime;
+          if (!validateEndTime()) {
+            startTime = getDateFromFields(startDateField, startTimeField);
+            endTime = resetEndTime(startTime);
+            setDateTimeFields(endTime, endDateField, endTimeField);
+          }
+        });
+
+        function validateEndTime() {
+          var st = getDateFromFields(startDateField, startTimeField);
+          var end = getDateFromFields(endDateField, endTimeField);
+          return st <= end;
+        }
+
+        function getDateFromFields(dateField, timeField) {
+          return new Date(dateField.value + " " + timeField.value);
+        }
+
+        function setDateTimeFields(dateVal, dateField, timeField) {
+          dateField.value = getDateString(dateVal);
+          timeField.value = getTimeString(dateVal);
+        }
+
+        function resetStartTime() {
+          var now = new Date();
+          if (now.getMinutes() >= 29) {
+            now.setHours(now.getHours() + 1);
+            now.setMinutes(0);
+          } else {
+            now.setMinutes(30);
+          }
+          now.setSeconds(0);
+          return now;
+        }
+
+        // Returns startTime plus 30 minutes
+        function resetEndTime(startTime) {
+          return new Date(startTime.getTime() + 1800000);
+        }
+
+        function getDateString(date) {
+          var month = date.getMonth() + 1;
+          var monthSt = (month < 10) ? '0' + month : '' + month;
+          var day = date.getDate();
+          var daySt = (day < 10) ? '0' + day : '' + day;
+          return date.getFullYear() + '-' + monthSt + '-' + daySt;
+        }
+
+        function getTimeString(time) {
+          var hours = time.getHours();
+          var hoursSt = (hours < 10) ? '0' + hours : '' + hours;
+          var minutes = time.getMinutes();
+          var minutesSt = (minutes < 10) ? '0' + minutes : '' + minutes;
+          return hoursSt + ':' + minutesSt;
+        }
+
+      })(document.getElementById('event-date-st'),
+        document.getElementById('event-time-st'),
+        document.getElementById('event-date-end'),
+        document.getElementById('event-time-end'),
+        document.getElementById('event-all-day'),
+        document.getElementById('event-date-time')
+      );
+
+      // Event location module
       (function(global) {
         'use strict';
 
