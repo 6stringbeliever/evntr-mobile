@@ -39,7 +39,11 @@
     {{#events}}
       <div class="card">
         <h3>{{ name }}</h3>
-        <p>{{ date.startDate }} {{ date.startTime }} - {{ date.endDate }} {{ date.endTime }}</p>
+        <p>Hosted by: {{ host }}</p>
+        <p>{{ message }}</p>
+        <h4>When</h4>
+        <p>{{ date.startDate }} {{ date.startTime }} – {{ date.endDate }} {{ date.endTime }}</p>
+        <h4>Location</h4>
         <p>{{ location.name }}</p>
         <p>{{ location.address }}</p>
       </div>
@@ -47,18 +51,10 @@
     </script>
     <script>
       // TODO Add mustache to build code
-      
-      var events = {events: [{
-        name: 'Porkfest 2016',
-        date: {
-          startDate: 'March 19, 2016',
-          endDate: 'March 22, 2016'
-        },
-        location: {
-          name: 'Grant Park',
-          address: '840 Cherokee Ave SE, Atlanta, GA 30312'
-        }
-      }]};
+      // TODO Use backend module
+
+      var backend = FauxBackendModule(window);
+      var events = backend.getEvents();
 
       var templ = document.getElementById('tmpl-event-item').innerHTML;
       Mustache.parse(templ);
