@@ -26,19 +26,6 @@
         </nav>
       </div>
     </header>
-    <!--
-
-    2) The app should allow users to create a new event. Each event should, at a minimum, allow a user to set:
-
-    x Name of the event
-    x Type of the event (birthday party, conference talk, wedding, etc.)
-    x Event host (could be an individual’s name or an organization)
-    Event start date and time
-    Event end date and time
-    * Guest list
-    Location
-    x Optional message to the guests with additional information about the event
-    -->
     <main class="container-horizontal">
       <section class="formsection">
         <h2>Create a New Event</h2>
@@ -78,8 +65,6 @@
                 <label for="event-time-st">Time</label>
                 <input type="time" name="event-time-st" class="inp-lrg" id="event-time-st">
               </div>
-
-
             <div class="inp-grp">
               <input type="checkbox" id="event-all-day" name="event-all-day">
               <label for="event-all-day">All day?</label>
@@ -97,19 +82,18 @@
           <hr/>
           <div>
             <h2>Where is the event?</h2>
-            <button class="btn-function" id="btn-near-me" type="button">Get suggestions near me</button>
-            <p>or</p>
-            <div class="inp-grp-horiz">
-              <label for="event-near-zip">Near ZIP code</label>
-              <input type="text" name="event-near-zip" class="inp-sm" id="event-near-zip" autocomplete="email">
-              <button type="button" class="btn-function" id="btn-near-zip">Get suggestions</button>
-            </div>
-            <p>or</p>
             <div class="inp-grp">
-              <label for="event-loc">Enter the location.</label>
-              <input type="text" name="event-loc" id="event-loc" class="inp-lrg" placeholder="Person or organization name">
+              <button id="btn-get-sug" type="button" class="btn-secondary-function btn-lrg">Get Suggestions</button>
             </div>
-            <input type="hidden" id="event-loc-pic" name="event-loc-pic">
+            <div class="inp-grp">
+              <label for="event-loc-name">Enter the location name</label>
+              <input type="text" name="event-loc-name" id="event-loc-name" class="inp-lrg" placeholder="e.g., Starbucks">
+            </div>
+            <div class="inp-grp">
+              <label for="event-loc-addr">Enter address</label>
+              <input type="text" name="event-loc-addr" id="event-loc-addr" class="inp-lrg" placeholder="e.g., 855 Peachtree St.">
+            </div>
+            <input type="hidden" name="event-loc-pic" id="event-loc-pic">
           </div>
           <hr />
           <div>
@@ -130,39 +114,80 @@
               <textarea id="event-msg" class="inp-lrg" name="event-msg"></textarea>
             </div>
           </div>
-
           <input type="submit" id="submit" class="btn-primary btn-lrg" value="Create event">
         </form>
       </section>
     </main>
+    <div id="loc-modal" class="modal modal-hidden">
+      <h2>Choose a location</h2>
+      <button type="button" class="close">Close</button>
+      <button class="btn-function" id="btn-near-me" type="button">Get suggestions near me</button>
+      <p>or</p>
+      <div class="inp-grp-horiz">
+        <label for="event-near-loc">Near location</label>
+        <input type="text" name="event-near-loc" class="inp-sm" id="event-near-loc" placeholder="e.g., Atlanta, GA or 30312">
+        <button type="button" class="btn-function" id="btn-near-loc">Get suggestions</button>
+      </div>
+      <p class="msg-area"></p>
+      <ul id="loc-sug-list">
+      </ul>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
     <script src="js/app.js"></script>
+    <script id="tmpl-guest-list" type="x-tmpl-mustache">
+      <ul>
+        {{ #name }}
+        <li>{{ . }}<button id="del-guest-{{ index }}" type="button">Remove</button>
+        <input type="hidden" name="event-guests-{{ index }}" value="{{ name }}"</li>{{ incIndex }}
+        {{ /name }}
+      </ul>
+    </script>
+    <script id="tmpl-loc-item" type="x-tmpl-mustache">
+      <li>
+        <p>{{ name }}</p>
+        <button type="button" id="loc-sug-item-{{ index }}">Select</button>
+        <p>{{ location }}</p>
+      </li>
+    </script>
     <script>
+      // TODO Don't validate guest input field
+      // TODO Formatting on start date and time
+      // TODO Formatting on add guest area and list
+      // TODO Highlight end time when it changes
+      // TODO Progressive enhancements and feature detection
+      // TODO Set required fields
+      // TODO Formatting on where is event
+      // TODO Event location pic
+
       var validation = ValidationModule();
 
       validation.initValidation(document.getElementById('create-event'),
         document.getElementById('submit'));
 
+      var backend = FauxBackendModule(window);
+
       // Guest list module
       (function(addButton, emailField, listDiv) {
         'use strict';
 
-        var guests = [];
-
-        var _getGuestListHTML = function() {
-          var output = '';
-          if (guests.length >= 1) {
-            output += '<ul class="event-guest-list">';
-            for (var i = 0; i < guests.length; i++) {
-              output += '<li>' + guests[i] + ' ';
-              output += '<button id="del-guest-' + i;
-              output += '" type="button">Remove</button>';
-              output += '<input type="hidden" name="event-guests-' + i + '" ';
-              output += 'value="' + guests[i] + '">';
-              output += '</li>';
-            }
-            output += '</ul>';
+        var guests = { name: [],
+          index: function() {
+            return window['INDEX'];
+          },
+          incIndex: function() {
+            ++window['INDEX'];
+          },
+          resetIndex: function() {
+            window['INDEX'] = 0;
           }
-          return output;
+        };
+
+        var templ = document.getElementById('tmpl-guest-list').innerHTML;
+        Mustache.parse(templ);
+
+        var getGuestListHTML = function() {
+          guests.resetIndex();
+          return Mustache.render(templ, guests);
         };
 
         addButton.setAttribute('disabled', 'true');
@@ -177,9 +202,9 @@
 
         addButton.addEventListener('click', function() {
           if (emailField.checkValidity()) {
-            guests.push(emailField.value);
+            guests.name.push(emailField.value);
             emailField.value = '';
-            listDiv.innerHTML = _getGuestListHTML();
+            listDiv.innerHTML = getGuestListHTML();
           }
         });
 
@@ -187,8 +212,8 @@
           var reg = /del-guest-([0-9]+)/;
           var match = reg.exec(e.target.id);
           if (match !== null) {
-            guests.splice(match[1], 1);
-            listDiv.innerHTML = _getGuestListHTML();
+            guests.name.splice(match[1], 1);
+            listDiv.innerHTML = getGuestListHTML();
           }
         });
 
@@ -283,31 +308,153 @@
       );
 
       // Event location module
-      (function(global) {
+      (function(global, btnNearMe, inpNearLoc, btnNearLoc, inpLocattion, inpAddr,
+        inpHiddenPic, getSugBtn, suggestionModal, suggestionList) {
         'use strict';
 
-        var reqDataBtn = document.getElementById('btn-near-me');
-        reqDataBtn.addEventListener('click', function(event) {
-        var query = "https://api.foursquare.com/v2/venues/explore?ll=44.3,37.2" +
-                "&client_id=HPTKFD3QU12Y0FPPQ0OVTZ51RFAYJ5L4104MNJJL0CW2HEEQ" +
-                "&client_secret=YLBK5PYZW4FZNK0QIQX5SCJOQS4TYYEHR2LZ2SHYGJLXJCLE" +
-                "&v=20130815";
+        var modalHidden = true;
+        var venues;
 
-        var backend = FauxBackendModule(global);
+        btnNearMe.addEventListener('click', function(e) {
+          setModalMessage('Getting your current location.');
+          clearSuggestions();
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = position.coords;
+            getSuggestions(pos.latitude, pos.longitude);
+          },
+          function(error) {
+            setModalMessage('Unable to get your current location.');
+          });
+        });
 
+        suggestionModal.getElementsByClassName('close')[0]
+          .addEventListener('click', function(e) {
+          toggleModalHidden(true);
+        });
+
+        btnNearLoc.addEventListener('click', function(e) {
+          clearSuggestions();
+          getSuggestions(inpNearLoc.value);
+        });
+
+        getSugBtn.addEventListener('click', function(e) {
+          toggleModalHidden(false);
+        });
+
+        suggestionList.addEventListener('click', function(e) {
+          var reg = /loc-sug-item-([0-9]+)/;
+          var match = reg.exec(e.target.id);
+          var selectedIndex;
+          if (match !== null) {
+            selectedIndex = match[1];
+            fillEventLocation(venues[selectedIndex].name,
+              venues[selectedIndex].location);
+            toggleModalHidden(true);
+          }
+        });
+
+        function toggleModalHidden() {
+          if (arguments.length > 0) {
+            modalHidden = arguments[0];
+          } else {
+            modalHidden = !modalHidden;
+          }
+          if (modalHidden) {
+            suggestionModal.classList.add('modal-hidden');
+          } else {
+            suggestionModal.classList.remove('modal-hidden');
+          }
+        }
+
+        function setModalMessage(msg) {
+          suggestionModal.getElementsByClassName('msg-area')[0].innerHTML = msg;
+        }
+
+        function fillEventLocation(name, address) {
+          inpLocattion.value = name;
+          inpAddr.value = address;
+        }
+
+        function getSuggestions() {
+          var query;
+          if (arguments.length === 1) {
+            query = getZipQuery(arguments[0]);
+          } else if (arguments.length > 1) {
+            query = getLatLonQuery(arguments[0], arguments[1]);
+          }
           fetch(query)
           .then(function(response){
             if(response.ok) {
-              console.log('good job');
               response.json().then(function(json) {
-                console.log(json);
+                // TODO It says Current Map Location when it's zip
+                setModalMessage('Showing suggestions near ' + json.response.headerFullLocation);
+                appendSuggestions(json);
               });
+            } else {
+              setModalMessage('Error getting data from Foursquare.')
             }
           });
-          event.preventDefault();
-        });
+        }
 
-      })(window);
+        function appendSuggestions(json) {
+          venues = processSuggestions(json.response.groups[0].items);
+          var listitem;
+          clearSuggestions();
+          var templ = document.getElementById('tmpl-loc-item').innerHTML;
+          Mustache.parse(templ);
+          for (var i = 0; i < venues.length; i++) {
+            listitem = Mustache.render(templ, venues[i]);
+            suggestionList.innerHTML += listitem;
+          }
+        }
+
+        function processSuggestions(json) {
+          var output = [];
+          var address;
+          for (var i = 0; i < json.length; i++) {
+            address = json[i].venue.location.formattedAddress[0];
+            address += ", " + json[i].venue.location.formattedAddress[1];
+            output.push({
+              index: i,
+              name: json[i].venue.name,
+              location: address
+            });
+          }
+          return output;
+        }
+
+        function clearSuggestions() {
+          suggestionList.innerHTML = "";
+        }
+
+        function getLatLonQuery(lat, lon) {
+          var query = "https://api.foursquare.com/v2/venues/explore?ll=" +
+                lat + "," + lon +
+                "&client_id=HPTKFD3QU12Y0FPPQ0OVTZ51RFAYJ5L4104MNJJL0CW2HEEQ" +
+                "&client_secret=YLBK5PYZW4FZNK0QIQX5SCJOQS4TYYEHR2LZ2SHYGJLXJCLE" +
+                "&v=20130815&limit=20&venuePhotos=1";
+          return query;
+        }
+
+        function getZipQuery(zip) {
+          var query = "https://api.foursquare.com/v2/venues/explore?near=" +
+                zip +
+                "&client_id=HPTKFD3QU12Y0FPPQ0OVTZ51RFAYJ5L4104MNJJL0CW2HEEQ" +
+                "&client_secret=YLBK5PYZW4FZNK0QIQX5SCJOQS4TYYEHR2LZ2SHYGJLXJCLE" +
+                "&v=20130815&limit=20&venuePhotos=1";
+          return query;
+        }
+
+      })(window,
+        document.getElementById('btn-near-me'),
+        document.getElementById('event-near-loc'),
+        document.getElementById('btn-near-loc'),
+        document.getElementById('event-loc-name'),
+        document.getElementById('event-loc-addr'),
+        document.getElementById('event-loc-pic'),
+        document.getElementById('btn-get-sug'),
+        document.getElementById('loc-modal'),
+        document.getElementById('loc-sug-list'));
     </script>
   </body>
 </html>

@@ -63,3 +63,16 @@ header {
   @extend .card;
   width: $max-layout-width / 2;
 }
+
+.modal {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 90%;
+  background-color: white;
+  border: 1px solid black;
+}
+
+.modal-hidden {
+  transform: translateX(-1000px);
+}
