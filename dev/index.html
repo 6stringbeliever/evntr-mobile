@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="no-js">
   <head lang="en">
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A fake events app for creating awesome fake events.">
     <link rel="stylesheet" href="css/style.css">
+    <script>
+      /* Test for js */
+      (function(h){
+        h.className = h.className.replace('no-js', 'js')
+      })(document.documentElement)
+    </script>
   </head>
   <body>
     <header>
@@ -21,14 +27,42 @@
       </div>
     </header>
     <main class="container-vertical">
-      <div class="card"><a href="createevent.html" class="btn-primary">Create an event</a></div>
+      <div class="card"><a href="createevent.html" class="btn-primary btn-lrg">Create an event</a></div>
       <h2>Upcoming Events</h2>
-      <div class="card">
-        <h3>Porkfest 2016</h3>
-        <p>February 22, 2016</p>
-        <p>Porktown USA</p>
-      </div>
+      <section id="events-list">
+
+      </section>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
     <script src="js/app.js"></script>
+    <script id="tmpl-event-item" type="x-tmpl-mustache">
+    {{#events}}
+      <div class="card">
+        <h3>{{ name }}</h3>
+        <p>{{ date.startDate }} {{ date.startTime }} - {{ date.endDate }} {{ date.endTime }}</p>
+        <p>{{ location.name }}</p>
+        <p>{{ location.address }}</p>
+      </div>
+    {{/events}}
+    </script>
+    <script>
+      // TODO Add mustache to build code
+      
+      var events = {events: [{
+        name: 'Porkfest 2016',
+        date: {
+          startDate: 'March 19, 2016',
+          endDate: 'March 22, 2016'
+        },
+        location: {
+          name: 'Grant Park',
+          address: '840 Cherokee Ave SE, Atlanta, GA 30312'
+        }
+      }]};
+
+      var templ = document.getElementById('tmpl-event-item').innerHTML;
+      Mustache.parse(templ);
+      document.getElementById('events-list').innerHTML = Mustache.render(templ, events);
+    </script>
   </body>
 </html>
