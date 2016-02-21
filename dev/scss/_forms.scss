@@ -153,6 +153,12 @@ a.btn {
   @include button-style(white, #4971d7);
 }
 
+.btn-hero {
+  @extend .btn;
+  padding: 1em 2em;
+  color: black;
+}
+
 .pw-mod-inp {
   @extend .inp-grp-compound__left;
 }

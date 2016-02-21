@@ -64,6 +64,42 @@ header {
   width: $max-layout-width / 2;
 }
 
+.card-event {
+  @extend .card;
+  width: $max-layout-width / 3;
+  h3 {
+    margin-bottom: 2px;
+  }
+  h4 {
+    margin-bottom: 0.75em;
+  }
+  .hosted {
+    margin: 0;
+    font-size: 0.8em;
+    color: #7d7d7d;
+  }
+  .address {
+    margin: 2px;
+  }
+}
+
+.hero {
+  text-align: center;
+  h2 {
+    font-weight: normal;
+    margin-bottom: 36px;
+  }
+  .hero-subhead {
+    font-size: 22px;
+  }
+}
+
+.events-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 .modal {
   position: absolute;
   top: 20px;

@@ -27,9 +27,13 @@
       </div>
     </header>
     <main class="container-vertical">
-      <div class="card"><a href="createevent.html" class="btn-primary btn-lrg">Create an event</a></div>
+      <section class="hero">
+        <h2>Evntr is the best place to find and create fake events!</h2>
+        <p class="hero-subhead">Free to get started.</p>
+        <a href="createevent.html" class="btn-hero">Create an event</a> <a href="signup.html" class="btn-hero">Sign up</a>
+      </section>
       <h2>Upcoming Events</h2>
-      <section id="events-list">
+      <section id="events-list" class="events-list">
 
       </section>
     </main>
@@ -37,21 +41,20 @@
     <script src="js/app.js"></script>
     <script id="tmpl-event-item" type="x-tmpl-mustache">
     {{#events}}
-      <div class="card">
+      <div class="card-event">
         <h3>{{ name }}</h3>
-        <p>Hosted by: {{ host }}</p>
+        <p class="hosted">Hosted by: {{ host }}</p>
         <p>{{ message }}</p>
         <h4>When</h4>
         <p>{{ date.startDate }} {{ date.startTime }} – {{ date.endDate }} {{ date.endTime }}</p>
         <h4>Location</h4>
-        <p>{{ location.name }}</p>
-        <p>{{ location.address }}</p>
+        <p class="address">{{ location.name }}</p>
+        <p class="address">{{ location.address }}</p>
       </div>
     {{/events}}
     </script>
     <script>
-      // TODO Add mustache to build code
-      // TODO Use backend module
+      // TODO Add mustache to build codes
 
       var backend = FauxBackendModule(window);
       var events = backend.getEvents();
