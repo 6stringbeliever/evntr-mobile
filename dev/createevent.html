@@ -32,15 +32,17 @@
         <h3>Event Details</h3>
         <form action="" id="create-event" novalidate>
           <div class="inp-grp">
-            <label for="event-name">What's the name of the event?</label>
-            <input type="text" name="event-name" id="event-name" class="inp-lrg" placeholder="e.g., Porkfest 2016" autofocus>
+            <label for="event-name" class="inp-label-req">What's the name of the event?</label>
+            <input type="text" name="event-name" id="event-name" class="inp-lrg" placeholder="e.g., Porkfest 2016" required autofocus>
+            <p class="error"></p>
           </div>
           <div class="inp-grp">
-            <label for="event-host">Who is the host of the event?</label>
-            <input type="text" name="event-host" id="event-host" class="inp-lrg" placeholder="Person or organization name">
+            <label for="event-host" class="inp-label-req">Who is the host of the event?</label>
+            <input type="text" name="event-host" id="event-host" class="inp-lrg" placeholder="Person or organization name" required>
+            <p class="error"></p>
           </div>
           <div class="inp-grp">
-            <label for="event-type">What is the purpose of the event?</label>
+            <label for="event-type" class="inp-label-opt">What is the purpose of the event?</label>
             <input list="event-type-list" name="event-type" id="event-type" class="inp-lrg" placeholder="e.g., Birthday, Business Meeting">
             <datalist id="event-type-list">
               <option value="Birthday" />
@@ -56,41 +58,46 @@
           <hr />
           <div id="event-date-time">
             <h3>When is the event?</h3>
-            <p>Start Time</p>
+            <p class="inp-label-req">Start Time</p>
               <div class="inp-grp">
                 <label for="event-date-st">Date</label>
-                <input type="date" name="event-date-st" class="inp-lrg" id="event-date-st">
+                <input type="date" name="event-date-st" class="inp-lrg" id="event-date-st" required>
+                <p class="error"></p>
               </div>
               <div class="inp-grp">
                 <label for="event-time-st">Time</label>
                 <input type="time" name="event-time-st" class="inp-lrg" id="event-time-st">
+                <p class="error"></p>
               </div>
             <div class="inp-grp">
               <input type="checkbox" id="event-all-day" name="event-all-day">
               <label for="event-all-day">All day?</label>
             </div>
-            <p>End Time</p>
+            <p class="inp-label-req">End Time</p>
             <div class="inp-grp">
               <label for="event-date-end">Date</label>
-              <input type="date" name="event-date-end" class="inp-lrg" id="event-date-end">
+              <input type="date" name="event-date-end" class="inp-lrg" id="event-date-end" required>
+              <p class="error"></p>
             </div>
             <div class="inp-grp">
               <label for="event-time-end">Time</label>
               <input type="time" name="event-time-end" class="inp-lrg" id="event-time-end">
+              <p class="error"></p>
             </div>
           </div>
           <hr/>
           <div>
             <h2>Where is the event?</h2>
-            <div class="inp-grp">
+            <div class="inp-grp location-mod">
               <button id="btn-get-sug" type="button" class="btn-secondary-function btn-lrg">Get Suggestions</button>
             </div>
             <div class="inp-grp">
-              <label for="event-loc-name">Enter the location name</label>
-              <input type="text" name="event-loc-name" id="event-loc-name" class="inp-lrg" placeholder="e.g., Starbucks">
+              <label for="event-loc-name" class="inp-label-req">Enter the location name</label>
+              <input type="text" name="event-loc-name" id="event-loc-name" class="inp-lrg" placeholder="e.g., Starbucks" required>
+              <p class="error"></p>
             </div>
             <div class="inp-grp">
-              <label for="event-loc-addr">Enter address</label>
+              <label for="event-loc-addr" class="inp-label-opt">Enter address</label>
               <input type="text" name="event-loc-addr" id="event-loc-addr" class="inp-lrg" placeholder="e.g., 855 Peachtree St.">
             </div>
             <input type="hidden" name="event-loc-pic" id="event-loc-pic">
@@ -99,9 +106,9 @@
           <div>
             <h2>Guest List</h2>
             <div class="inp-grp">
-              <label for="event-guest">Add a guest by email</label>
+              <label for="event-guest" class="inp-label-opt">Add a guest by email</label>
               <div class="inp-grp-compound">
-                <input type="email" id="event-guest" name="event-guest" class="inp-grp-compound__left" placeholder="guest@example.com"><button class="inp-grp-compound__right btn-secondary-function" id="add-guest" type="button">Add</button>
+                <input type="email" id="event-guest" name="event-guest" class="inp-grp-compound__left novalidate" placeholder="guest@example.com"><button class="inp-grp-compound__right btn-secondary-function" id="add-guest" type="button">Add</button>
               </div>
               <div id="guest-list"></div>
             </div>
@@ -110,7 +117,7 @@
           <div>
             <h2>Anything else you need to tell your guests?</h2>
             <div class="inp-grp">
-              <label for="event-msg">Enter any additional details for your guests</label>
+              <label for="event-msg" class="inp-label-opt">Enter any additional details for your guests</label>
               <textarea id="event-msg" class="inp-lrg" name="event-msg"></textarea>
             </div>
           </div>
@@ -150,21 +157,20 @@
       </li>
     </script>
     <script>
-      // TODO Don't validate guest input field
+      // TODO Fix document heading hierarchy
       // TODO Formatting on start date and time
       // TODO Formatting on add guest area and list
       // TODO Highlight end time when it changes
-      // TODO Progressive enhancements and feature detection
-      // TODO Set required fields
-      // TODO Formatting on where is event
+      // TODO Formatting on where is event modal
       // TODO Event location pic
 
+      var backend = FauxBackendModule(window);
       var validation = ValidationModule();
+      var submitButton = document.getElementById('submit');
+      var guestList;
 
       validation.initValidation(document.getElementById('create-event'),
-        document.getElementById('submit'));
-
-      var backend = FauxBackendModule(window);
+        submitButton);
 
       // Guest list module
       (function(addButton, emailField, listDiv) {
@@ -185,15 +191,19 @@
         var templ = document.getElementById('tmpl-guest-list').innerHTML;
         Mustache.parse(templ);
 
+        /* Resetting guestList here because this is the main spot
+           we know that the guest list has been updated by any function.
+        */
         var getGuestListHTML = function() {
           guests.resetIndex();
+          guestList = guests;
           return Mustache.render(templ, guests);
         };
 
         addButton.setAttribute('disabled', 'true');
 
         emailField.addEventListener('keyup', function() {
-          if (emailField.checkValidity()) {
+          if (emailField.value !== '' && emailField.checkValidity()) {
             addButton.removeAttribute('disabled');
           } else {
             addButton.setAttribute('disabled', 'true');
@@ -308,7 +318,7 @@
       );
 
       // Event location module
-      (function(global, btnNearMe, inpNearLoc, btnNearLoc, inpLocattion, inpAddr,
+      (function(btnNearMe, inpNearLoc, btnNearLoc, inpLocattion, inpAddr,
         inpHiddenPic, getSugBtn, suggestionModal, suggestionList) {
         'use strict';
 
@@ -445,8 +455,7 @@
           return query;
         }
 
-      })(window,
-        document.getElementById('btn-near-me'),
+      })(document.getElementById('btn-near-me'),
         document.getElementById('event-near-loc'),
         document.getElementById('btn-near-loc'),
         document.getElementById('event-loc-name'),
@@ -455,6 +464,77 @@
         document.getElementById('btn-get-sug'),
         document.getElementById('loc-modal'),
         document.getElementById('loc-sug-list'));
+
+      // Submit button module
+      // Gathers data from input elements and adds an event to the
+      // faux backend in lieu of submitting to a real backend.
+      (function(submitButton, backend) {
+
+        var months = ['January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'];
+
+        submitButton.addEventListener('click', function(e) {
+          var date;
+          if (document.getElementById('event-all-day').checked) {
+            date = {
+              startDate: getDateString(document.getElementById('event-date-st'), document.getElementById('event-time-st')),
+              endDate: getDateString(document.getElementById('event-date-end'), document.getElementById('event-time-end')),
+              allDay: true
+            };
+          } else {
+            date = {
+              startDate: getDateString(document.getElementById('event-date-st'), document.getElementById('event-time-st')),
+              startTime: getTimeString(document.getElementById('event-date-st'), document.getElementById('event-time-st')),
+              endDate: getDateString(document.getElementById('event-date-end'), document.getElementById('event-time-end')),
+              endTime: getTimeString(document.getElementById('event-date-end'), document.getElementById('event-time-end')),
+              allDay: false
+            };
+          }
+          var event = {
+            name: document.getElementById('event-name').value,
+            host: document.getElementById('event-host').value,
+            purpose: document.getElementById('event-type').value,
+            date: date,
+            location: {
+              name: document.getElementById('event-loc-name').value,
+              address: document.getElementById('event-loc-addr').value,
+              picture: null
+            },
+            guests: guestList,
+            message: document.getElementById('event-msg').value
+          };
+          backend.addEvent(event);
+
+          function getDateString(dateField, timeField) {
+            var date = new Date(dateField.value + " " + timeField.value);
+            return months[date.getMonth()] + ' ' + date.getDate() + ", " + date.getFullYear();
+          }
+
+          function getTimeString(dateField, timeField) {
+            var date = new Date(dateField.value + ' ' + timeField.value);
+            var hours;
+            var m = date.getMinutes();
+            var minutes = (m < 10) ? '0' + m : '' + m;
+            var ampm;
+            if (date.getHours() === 0) {
+              hours = '12';
+              ampm = 'am';
+            } else if (date.getHours() < 12) {
+              hours = date.getHours().toString();
+              ampm = 'am';
+            } else if (date.getHours() === 12) {
+              hours = '12';
+              ampm = 'pm';
+            } else {
+              hours = (date.getHours() - 12).toString();
+              ampm = 'pm';
+            }
+            return hours + ':' + minutes + ' ' + ampm;
+          }
+
+        });
+      })(submitButton, backend);
+
     </script>
   </body>
 </html>

@@ -13,14 +13,6 @@ var FauxBackendModule = function(global) {
     Add some faux data if there's no faux data.
   */
   function _initialize() {
-    /***
-
-      FIRST LINE IS JUST TO EASE DEVELOPMENT
-
-      DELETE ME WHEN DONE
-
-    ***/
-    _myStorage.clear();
     var events = getEvents();
     if (events === null) {
       events = { events: [{
@@ -106,6 +98,7 @@ var FauxBackendModule = function(global) {
   function addEvent(e) {
     var events = getEvents();
     events.events.push(e);
+    _setEvents(events);
   }
 
   globalAPI = {
@@ -129,8 +122,19 @@ var ValidationModule = function() {
 
   var globalAPI = {};
   var _cache = {};
+  // TODO Fill this with replacements for lousy Safari messages
+  // (although that could also be responsibility of module user which
+  // is why we have setCustomMessages function.)
+  // TODO Update validity status when values are set programatically
   var _messages = {};
 
+  /*
+    Call this method to start the validation module. Gets all of
+    the input elements in the form and disables the submit button
+    until the inputs all validate using the HTML5 form validation
+    API. Validates inputs after the first blur event on the input
+    and then on all keyup events after that.
+  */
   var initValidation = function(form, button) {
     var formElements = form.getElementsByTagName('input');
     button.setAttribute('disabled', 'disabled');
@@ -139,7 +143,8 @@ var ValidationModule = function() {
         _setValidityMessage(e.target);
       }
       for (var i = 0; i < formElements.length; i++) {
-        if (!formElements[i].checkValidity()) {
+        if (!formElements[i].classList.contains('novalidate') &&
+          !formElements[i].checkValidity()) {
           button.setAttribute('disabled', 'disabled');
           return;
         }
