@@ -65,7 +65,8 @@
     </main>
     <script src="js/app.js"></script>
     <script>
-      // TODO login with fake backend
+      var backend = FauxBackendModule(window);
+
       if (HTMLInputElement.prototype.checkValidity) {
         var pwInput = document.getElementById('user-pw');
         var validationModule = ValidationModule();
@@ -119,6 +120,21 @@
         });
       })(document.getElementById('user-pw'),
         document.getElementById('show-pw'));
+
+      /* Add user to table on signup */
+      (function(backend, emailField, pwField, submitButton) {
+        submitButton.addEventListener('click', function(e) {
+          var user = getUserData();
+          backend.addUser(user);
+        });
+
+        function getUserData() {
+          return { email: emailField.value, password: pwField.value };
+        }
+      })(backend,
+        document.getElementById('user-email'),
+        document.getElementById('user-pw'),
+        document.getElementById('submit'));
     </script>
   </body>
 </html>

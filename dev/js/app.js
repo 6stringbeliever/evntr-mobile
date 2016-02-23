@@ -1,3 +1,9 @@
+/* FauxBackendModule lets us mock some behavior that would
+   otherwise require an actual backend by using localstorage.
+   We most certainly do not do ALL of the nice things that an
+   actual backend would do, like, for instance, duplicate checking
+   on events or users. Or any sort of backend data validation.
+   */
 var FauxBackendModule = function(global) {
   'use strict';
 
@@ -7,6 +13,7 @@ var FauxBackendModule = function(global) {
   /* Constant(likethings) */
 
   var LOGGED_IN_USER = 'logged-in-user';
+  var ALL_USERS = 'user-table';
   var EVENTS = 'all-events';
 
   /*
@@ -69,6 +76,9 @@ var FauxBackendModule = function(global) {
       }]};
       _setEvents(events);
     }
+    if (_getUsers() === null) {
+      _setUsers({ users: [] });
+    }
   }
 
   function _setEvents(events) {
@@ -101,13 +111,43 @@ var FauxBackendModule = function(global) {
     _setEvents(events);
   }
 
+  function addUser(u) {
+    var users = _getUsers();
+    users.users.push(u);
+    _setUsers(users);
+  }
+
+  function verifyUser(u) {
+    var users = _getUsers().users;
+    var verify = false;
+    for (var i = 0; i < users.length; i++) {
+      if (users[i].email === u.email) {
+        if (users[i].password === u.password) {
+          verify = true;
+        }
+        return verify;
+      }
+    }
+    return verify;
+  }
+
+  function _getUsers() {
+    return JSON.parse(_myStorage.getItem(ALL_USERS));
+  }
+
+  function _setUsers(users) {
+    _myStorage.setItem(ALL_USERS, JSON.stringify(users));
+  }
+
   globalAPI = {
     getEvents: getEvents,
     addEvent: addEvent,
+    addUser: addUser,
     logOutUser: logOutUser,
     getLoggedInUser: getLoggedInUser,
     setLoggedInUser: setLoggedInUser,
-    isUserLoggedIn: isUserLoggedIn
+    isUserLoggedIn: isUserLoggedIn,
+    verifyUser: verifyUser
   };
 
   _initialize();
@@ -125,8 +165,10 @@ var ValidationModule = function() {
   // TODO Fill this with replacements for lousy Safari messages
   // (although that could also be responsibility of module user which
   // is why we have setCustomMessages function.)
-  // TODO Update validity status when values are set programatically
   var _messages = {};
+  var formElements;
+  var form;
+  var button;
 
   /*
     Call this method to start the validation module. Gets all of
@@ -135,47 +177,59 @@ var ValidationModule = function() {
     API. Validates inputs after the first blur event on the input
     and then on all keyup events after that.
   */
-  var initValidation = function(form, button) {
-    var formElements = form.getElementsByTagName('input');
+  var initValidation = function(f, b) {
+    form = f;
+    button = b;
+    formElements = form.getElementsByTagName('input');
     button.setAttribute('disabled', 'disabled');
-    form.addEventListener('keyup', function(e) {
-      if (_cache.hasOwnProperty(e.target.id) && _cache[e.target.id].haslostfocus) {
-        _setValidityMessage(e.target);
-      }
-      for (var i = 0; i < formElements.length; i++) {
-        if (!formElements[i].classList.contains('novalidate') &&
-          !formElements[i].checkValidity()) {
-          button.setAttribute('disabled', 'disabled');
-          return;
-        }
-      }
-      button.removeAttribute('disabled');
-    });
+    form.addEventListener('keyup', _validateForm);
     form.addEventListener('blur', function(e) {
-      _setValidityMessage(e.target);
-      if (_cache.hasOwnProperty(e.target.id)) {
-        _cache[e.target.id].haslostfocus = true;
-      } else {
-        _cache[e.target.id] = {};
-        _cache[e.target.id].haslostfocus = true;
-      }
+      _tripFocus(e.target.id);
+      _validateForm(e);
     }, true);
+    form.addEventListener('change', function(e) {
+      _tripFocus(e.target.id);
+      _validateForm(e);
+    });
   };
 
-  var setCustomMessages = function(messages) {
+  function setCustomMessages(messages) {
     _messages = messages;
-  };
+  }
 
-  var _setValidityMessage = function(inputElement) {
+  function _tripFocus(id) {
+    if (_cache.hasOwnProperty(id)) {
+      _cache[id].haslostfocus = true;
+    } else {
+      _cache[id] = {};
+      _cache[id].haslostfocus = true;
+    }
+  }
+
+  function _validateForm(e) {
+    if (_cache.hasOwnProperty(e.target.id) && _cache[e.target.id].haslostfocus) {
+      _setValidityMessage(e.target);
+    }
+    for (var i = 0; i < formElements.length; i++) {
+      if (!formElements[i].classList.contains('novalidate') &&
+        !formElements[i].checkValidity()) {
+        button.setAttribute('disabled', 'disabled');
+        return;
+      }
+    }
+    button.removeAttribute('disabled');
+  }
+
+  function _setValidityMessage(inputElement) {
     var errorField = _getErrorElement(inputElement);
     if (!inputElement.checkValidity()) {
       errorField.innerHTML = _getValidityMessage(inputElement);
     } else if (errorField !== null) {
       errorField.innerHTML = '';
     }
-  };
+  }
 
-  var _getValidityMessage = function(inputElement) {
+  function _getValidityMessage(inputElement) {
     var msg;
     if (_messages.hasOwnProperty(inputElement.validationMessage)) {
       msg = _messages[msg];
@@ -183,9 +237,9 @@ var ValidationModule = function() {
       msg = inputElement.validationMessage;
     }
     return msg;
-  };
+  }
 
-  var _getErrorElement = function(inputNode) {
+  function _getErrorElement(inputNode) {
     var inputNodeId = inputNode.id;
     var errorFieldById = document.getElementById(inputNodeId + '-error');
     if (inputNodeId && errorFieldById !== null) {
@@ -193,7 +247,7 @@ var ValidationModule = function() {
     } else {
       return inputNode.parentNode.querySelector('.error');
     }
-  };
+  }
 
   globalAPI = {
     'initValidation': initValidation,

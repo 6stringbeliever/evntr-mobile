@@ -318,7 +318,7 @@
       );
 
       // Event location module
-      (function(btnNearMe, inpNearLoc, btnNearLoc, inpLocattion, inpAddr,
+      (function(btnNearMe, inpNearLoc, btnNearLoc, inpLocation, inpAddr,
         inpHiddenPic, getSugBtn, suggestionModal, suggestionList) {
         'use strict';
 
@@ -381,8 +381,10 @@
         }
 
         function fillEventLocation(name, address) {
-          inpLocattion.value = name;
+          inpLocation.value = name;
+          inpLocation.dispatchEvent(new Event('change', { bubbles: true }));
           inpAddr.value = address;
+          inpAddr.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
         function getSuggestions() {
