@@ -159,12 +159,6 @@
       </li>
     </script>
     <script>
-      // TODO Formatting on start date and time
-      // TODO Formatting on add guest area and list
-      // TODO Highlight end time when it changes
-      // TODO Formatting on where is event modal
-      // TODO Event location pic
-
       var backend = FauxBackendModule(window);
       var validation = ValidationModule();
       var submitButton = document.getElementById('submit');
@@ -399,7 +393,6 @@
           .then(function(response){
             if(response.ok) {
               response.json().then(function(json) {
-                // TODO It says Current Map Location when it's zip
                 setModalMessage('Showing suggestions near ' + json.response.headerFullLocation);
                 appendSuggestions(json);
               });

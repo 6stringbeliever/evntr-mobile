@@ -162,9 +162,6 @@ var ValidationModule = function() {
 
   var globalAPI = {};
   var _cache = {};
-  // TODO Fill this with replacements for lousy Safari messages
-  // (although that could also be responsibility of module user which
-  // is why we have setCustomMessages function.)
   var _messages = {};
   var formElements;
   var form;
