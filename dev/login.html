@@ -32,10 +32,32 @@
             <label for="user-pw">Password</label>
             <input type="password" name="user-pw" class="inp-lrg" id="user-pw">
           </div>
-          <input type="submit" class="btn-primary btn-lrg" value="Log in">
+          <input type="submit" id="submit" class="btn-primary btn-lrg" value="Log in">
         </form>
       </section>
     </main>
     <script src="js/app.js"></script>
+    <script>
+      var backend = FauxBackendModule(window);
+
+      // Submit module
+      (function(backend, emailField, pwField, submitButton) {
+        submit.addEventListener('click', function(e) {
+          var user = getUser();
+          if (backend.verifyUser(user)) {
+            backend.setLoggedInUser(user);
+          } else {
+            console.log('Failed to log in.')
+          }
+        });
+
+        function getUser() {
+          return {email: emailField.value, password: pwField.value };
+        }
+      })(backend,
+        document.getElementById('user-email'),
+        document.getElementById('user-pw'),
+        document.getElementById('submit'));
+    </script>
   </body>
 </html>
