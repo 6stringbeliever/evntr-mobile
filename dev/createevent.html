@@ -87,7 +87,7 @@
           </div>
           <hr/>
           <div>
-            <h2>Where is the event?</h2>
+            <h3>Where is the event?</h3>
             <div class="inp-grp location-mod">
               <button id="btn-get-sug" type="button" class="btn-secondary-function btn-lrg">Get Suggestions</button>
             </div>
@@ -104,7 +104,7 @@
           </div>
           <hr />
           <div>
-            <h2>Guest List</h2>
+            <h3>Guest List</h3>
             <div class="inp-grp">
               <label for="event-guest" class="inp-label-opt">Add a guest by email</label>
               <div class="inp-grp-compound">
@@ -115,7 +115,7 @@
           </div>
           <hr />
           <div>
-            <h2>Anything else you need to tell your guests?</h2>
+            <h3>Anything else you need to tell your guests?</h3>
             <div class="inp-grp">
               <label for="event-msg" class="inp-label-opt">Enter any additional details for your guests</label>
               <textarea id="event-msg" class="inp-lrg" name="event-msg"></textarea>
@@ -128,21 +128,23 @@
     <div id="loc-modal" class="modal modal-hidden">
       <h2>Choose a location</h2>
       <button type="button" class="close">Close</button>
-      <button class="btn-function" id="btn-near-me" type="button">Get suggestions near me</button>
+      <button class="btn-function btn-lrg" id="btn-near-me" type="button">Get suggestions near me</button>
       <p>or</p>
-      <div class="inp-grp-horiz">
+      <div class="inp-grp">
         <label for="event-near-loc">Near location</label>
-        <input type="text" name="event-near-loc" class="inp-sm" id="event-near-loc" placeholder="e.g., Atlanta, GA or 30312">
-        <button type="button" class="btn-function" id="btn-near-loc">Get suggestions</button>
+        <div class="inp-grp-compound">
+          <input type="text" name="event-near-loc" class="inp-lrg inp-grp-compound__left" id="event-near-loc" placeholder="Atlanta, GA or 30312">
+          <button type="button" class="btn-function inp-grp-compound__right" id="btn-near-loc">Search</button>
+        </div>
       </div>
       <p class="msg-area"></p>
-      <ul id="loc-sug-list">
+      <ul id="loc-sug-list" class="modal-sug-list">
       </ul>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
     <script src="js/app.js"></script>
     <script id="tmpl-guest-list" type="x-tmpl-mustache">
-      <ul>
+      <ul class="guest-list">
         {{ #name }}
         <li>{{ . }}<button id="del-guest-{{ index }}" type="button">Remove</button>
         <input type="hidden" name="event-guests-{{ index }}" value="{{ name }}"</li>{{ incIndex }}
@@ -151,13 +153,12 @@
     </script>
     <script id="tmpl-loc-item" type="x-tmpl-mustache">
       <li>
-        <p>{{ name }}</p>
-        <button type="button" id="loc-sug-item-{{ index }}">Select</button>
+        <p>{{ name }}
+        <button type="button" id="loc-sug-item-{{ index }}">Select</button></p>
         <p>{{ location }}</p>
       </li>
     </script>
     <script>
-      // TODO Fix document heading hierarchy
       // TODO Formatting on start date and time
       // TODO Formatting on add guest area and list
       // TODO Highlight end time when it changes
