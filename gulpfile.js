@@ -1,18 +1,9 @@
-/*
-Getting started:
-Create your package.json:
-npm init
-Install gulp locally:
-npm install --save-dev gulp
-Install all the packages below:
-npm install --save-dev gulp-sass gulp-eslint gulp-uglify gulp-minify-html gulp-minify-inline del browser-sync
-*/
-
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var eslint = require('gulp-eslint');
 var uglify = require('gulp-uglify');
-var minifyHTML = require('gulp-minify-html');
+var htmlmin = require('gulp-htmlmin');
+var concat = require('gulp-concat');
 var minifyInline = require('gulp-minify-inline');
 var browserSync = require('browser-sync').create();
 var del = require('del');
@@ -28,8 +19,11 @@ gulp.task('lint', function() {
 // Minify HTML and inline scripts and CSS
 gulp.task('minifyhtml', function() {
   return gulp.src('dev/**/*.html')
-             .pipe(minifyHTML())
-             .pipe(minifyInline())
+             .pipe(htmlmin({
+               removeComments: true,
+               collapseWhitespace: true
+             }))
+             .pipe(minifyInline({jsSelector: 'script[type!="text/x-tmpl-mustache"]'}))
              .pipe(gulp.dest('dist'));
 });
 
@@ -50,9 +44,17 @@ gulp.task('sass-serve', function () {
 
 // Minify JavaScript
 gulp.task('minifyjs', function() {
-  return gulp.src('dev/js/*.js')
+  return gulp.src('dev/js/lib/*.js')
+             .pipe(concat('app.js'))
              .pipe(uglify())
              .pipe(gulp.dest('dist/js/'));
+});
+
+// Concat js but don't minify for dev
+gulp.task('js-serve', function() {
+  return gulp.src('dev/js/lib/*.js')
+             .pipe(concat('app.js'))
+             .pipe(gulp.dest('dev/js/'));
 });
 
 // Move images with PNG or JPG extension
@@ -61,47 +63,27 @@ gulp.task('moveimages', function() {
              .pipe(gulp.dest('dist/img/'));
 });
 
-// Move lib css files; don't need to do this every time
-gulp.task('movelibcss', function() {
-  return gulp.src('dev/css/lib/*.css')
-             .pipe(gulp.dest('dist/css/lib/'));
-});
-
-// Move lib js files; don't need to do this every time
-gulp.task('movelibjs', function() {
-  return gulp.src('dev/js/lib/*.js')
-  .pipe(gulp.dest('dist/js/lib/'));
-});
-
-// Move js files because we don't want to minify when developing
-gulp.task('movejs', function() {
-  return gulp.src('dev/js/*.js')
-  .pipe(gulp.dest('dist/js//'));
-});
-
 gulp.task('clean', function(cb) {
-  del(['dist/*'], cb);
+  del(['dist/*']);
+  cb();
 });
-
-// Move all lib files
-gulp.task('movelib', ['movelibcss', 'movelibjs']);
 
 // Do everything by default
-gulp.task('default', ['lint', 'sass', 'minifyhtml', 'minifyjs', 'moveimages']);
+gulp.task('default', ['serve']);
 
 // Watch HTML, Sass, JavaScript files and update on change
 // Since this is for dev, we don't minify the js for debugging
 gulp.task('serve', function() {
 
-    browserSync.init({
-        server: "./dev"
-    });
+  browserSync.init({
+      server: "./dev"
+  });
 
   // Watch Sass files and update
   gulp.watch('dev/scss/*.scss', ['sass-serve']);
 
   // Watch js files and lint
-  gulp.watch('dev/js/*.js', ['lint']);
+  gulp.watch('dev/js/lib/*.js', ['lint', 'js-serve']);
 
   gulp.watch("dev/**/*.html").on('change', browserSync.reload);
 });
@@ -109,6 +91,5 @@ gulp.task('serve', function() {
 // Prepare for actual dist, clean the directory, then build and minify
 // everything.
 gulp.task('build', ['clean'], function() {
-  gulp.start('moveimages', 'movelibcss', 'movelibjs', 'minifyhtml',
-              'sass', 'minifyjs');
+  gulp.start('moveimages', 'minifyhtml', 'sass', 'minifyjs');
 });
