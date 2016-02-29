@@ -89,7 +89,7 @@
           <div>
             <h3>Where is the event?</h3>
             <div class="inp-grp location-mod">
-              <button id="btn-get-sug" type="button" class="btn-secondary-function btn-lrg">Get Suggestions</button>
+              <button id="btn-get-sug" type="button" class="btn-function btn-lrg">Get Suggestions</button>
             </div>
             <div class="inp-grp">
               <label for="event-loc-name" class="inp-label-req">Enter the location name</label>
@@ -108,7 +108,7 @@
             <div class="inp-grp">
               <label for="event-guest" class="inp-label-opt">Add a guest by email</label>
               <div class="inp-grp-compound">
-                <input type="email" id="event-guest" name="event-guest" class="inp-grp-compound__left novalidate" placeholder="guest@example.com"><button class="inp-grp-compound__right btn-secondary-function" id="add-guest" type="button">Add</button>
+                <input type="email" id="event-guest" name="event-guest" class="inp-grp-compound__left  inp-grp-compound__fill novalidate" placeholder="guest@example.com"><button class="inp-grp-compound__right btn-function" id="add-guest" type="button">Add</button>
               </div>
               <div id="guest-list"></div>
             </div>
@@ -127,7 +127,7 @@
     </main>
     <div id="loc-modal" class="modal modal-hidden">
       <h2>Choose a location</h2>
-      <button type="button" class="close">Close</button>
+      <button type="button" class="btn-close">X</button>
       <button class="btn-function btn-lrg" id="btn-near-me" type="button">Get suggestions near me</button>
       <p>or</p>
       <div class="inp-grp">
@@ -145,7 +145,7 @@
     <script id="tmpl-guest-list" type="text/x-tmpl-mustache">
       <ul class="guest-list">
         {{ #name }}
-        <li>{{ . }}<button id="del-guest-{{ index }}" type="button">Remove</button>
+        <li>{{ . }}<button id="del-guest-{{ index }}" class="btn-sm-inline" type="button">Remove</button>
         <input type="hidden" name="event-guests-{{ index }}" value="{{ name }}"</li>{{ incIndex }}
         {{ /name }}
       </ul>
@@ -153,7 +153,7 @@
     <script id="tmpl-loc-item" type="text/x-tmpl-mustache">
       <li>
         <p>{{ name }}
-        <button type="button" id="loc-sug-item-{{ index }}">Select</button></p>
+        <button type="button" class="btn-sm-inline" id="loc-sug-item-{{ index }}">Select</button></p>
         <p>{{ location }}</p>
       </li>
     </script>
@@ -331,7 +331,7 @@
           });
         });
 
-        suggestionModal.getElementsByClassName('close')[0]
+        suggestionModal.getElementsByClassName('btn-close')[0]
           .addEventListener('click', function(e) {
           toggleModalHidden(true);
         });

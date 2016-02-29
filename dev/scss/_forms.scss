@@ -104,6 +104,10 @@ textarea.inp-lrg {
   border-bottom-left-radius: 0;
 }
 
+.inp-grp-compound__fill {
+  flex-grow: 1;
+}
+
 .inp-label-req {
   &:after {
     font-weight: bold;
@@ -145,18 +149,22 @@ a.btn {
 
 .btn-function {
   @extend .btn;
-  @include button-style(white, #0a4efb);
-}
-
-.btn-secondary-function {
-  @extend .btn;
-  @include button-style(white, #4971d7);
+  @include button-style(white, $button-function-color);
 }
 
 .btn-hero {
   @extend .btn;
   padding: 1em 2em;
   color: black;
+}
+
+.btn-close {
+  @include button-style(white, $button-close-color);
+}
+
+.btn-sm-inline {
+  padding: 0 0.5em;
+  @include button-style(#333, $button-inline-color);
 }
 
 .pw-mod-inp {
