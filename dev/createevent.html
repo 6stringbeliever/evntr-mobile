@@ -392,7 +392,13 @@
           .then(function(response){
             if(response.ok) {
               response.json().then(function(json) {
-                setModalMessage('Showing suggestions near ' + json.response.headerFullLocation);
+                var message = 'Showing suggestions near ';
+                if (json.response.headerFullLocation !== 'Current map view') {
+                  message += json.response.headerFullLocation;
+                } else {
+                  message += inpNearLoc.value;
+                }
+                setModalMessage(message);
                 appendSuggestions(json);
               });
             } else {
