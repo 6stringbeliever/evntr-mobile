@@ -58,31 +58,37 @@
           <hr />
           <div id="event-date-time">
             <h3>When is the event?</h3>
-            <p class="inp-label-req">Start Time</p>
-              <div class="inp-grp">
-                <label for="event-date-st">Date</label>
-                <input type="date" name="event-date-st" class="inp-lrg" id="event-date-st" required>
-                <p class="error"></p>
+            <div class="form-grp">
+              <div class="form-grp__half">
+                <p class="inp-label-req">Start Time</p>
+                  <div class="inp-grp">
+                    <label for="event-date-st">Date</label>
+                    <input type="date" name="event-date-st" class="inp-lrg" id="event-date-st" required>
+                    <p class="error"></p>
+                  </div>
+                  <div class="inp-grp">
+                    <label for="event-time-st">Time</label>
+                    <input type="time" name="event-time-st" class="inp-lrg" id="event-time-st">
+                    <p class="error"></p>
+                  </div>
+                <div class="inp-grp">
+                  <input type="checkbox" id="event-all-day" name="event-all-day">
+                  <label for="event-all-day">All day?</label>
+                </div>
               </div>
-              <div class="inp-grp">
-                <label for="event-time-st">Time</label>
-                <input type="time" name="event-time-st" class="inp-lrg" id="event-time-st">
-                <p class="error"></p>
+              <div class="form-grp__half">
+                <p class="inp-label-req">End Time</p>
+                <div class="inp-grp">
+                  <label for="event-date-end">Date</label>
+                  <input type="date" name="event-date-end" class="inp-lrg" id="event-date-end" required>
+                  <p class="error"></p>
+                </div>
+                <div class="inp-grp">
+                  <label for="event-time-end">Time</label>
+                  <input type="time" name="event-time-end" class="inp-lrg" id="event-time-end">
+                  <p class="error"></p>
+                </div>
               </div>
-            <div class="inp-grp">
-              <input type="checkbox" id="event-all-day" name="event-all-day">
-              <label for="event-all-day">All day?</label>
-            </div>
-            <p class="inp-label-req">End Time</p>
-            <div class="inp-grp">
-              <label for="event-date-end">Date</label>
-              <input type="date" name="event-date-end" class="inp-lrg" id="event-date-end" required>
-              <p class="error"></p>
-            </div>
-            <div class="inp-grp">
-              <label for="event-time-end">Time</label>
-              <input type="time" name="event-time-end" class="inp-lrg" id="event-time-end">
-              <p class="error"></p>
             </div>
           </div>
           <hr/>

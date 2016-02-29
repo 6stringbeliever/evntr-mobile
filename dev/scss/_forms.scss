@@ -37,6 +37,7 @@ a.btn {
 }
 
 .inp-grp {
+  width: 100%;
   label,
   input {
     display: block;
@@ -63,6 +64,7 @@ textarea.inp-lrg {
 }
 
 .inp-grp-horiz {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -127,6 +129,26 @@ textarea.inp-lrg {
 .inp-label-instr {
   font-size: 0.8em;
   color: #818181;
+}
+
+.form-grp {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  @media screen and (min-width: 535px) {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.form-grp__half {
+  width: 100%;
+  @media screen and (min-width: 535px) {
+    width: 47.5%;
+  }
 }
 
 a.btn {
