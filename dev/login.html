@@ -14,8 +14,9 @@
         <h1><a href="/">Evntr</a></h1>
         <nav>
           <ul class="header-menu">
-            <li><a href="signup.html">Sign Up</a></li>
-            <li><a href="login.html">Log In</a></li>
+            <li class="only-lo"><a href="signup.html">Sign Up</a></li>
+            <li class="only-lo"><a href="login.html">Log In</a></li>
+            <li class="only-li"><a id="log-out" href="index.html">Log Out</a></li>
           </ul>
         </nav>
       </div>
@@ -39,6 +40,9 @@
     <script src="js/app.js"></script>
     <script>
       var backend = FauxBackendModule(window);
+      var loggedInMod = LoggedIn(document.documentElement,
+        backend.isUserLoggedIn);
+      LogoutButton(document.getElementById('log-out'), backend, loggedInMod);
 
       // Submit module
       (function(backend, emailField, pwField, submitButton) {
