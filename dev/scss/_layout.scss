@@ -51,7 +51,7 @@ header {
 
 .card {
   max-width: 100%;
-  background-color: #f4f4f4;
+  background-color: $card-color;
   padding: 1em 2em 2em 2em;
   margin-bottom: 2em;
   box-shadow: -1px 0 1px rgba(133, 133, 133, 0.4),
@@ -108,12 +108,12 @@ header {
   margin-right: auto;
   margin-left: auto;
   padding: 1em;
-  width: $max-layout-width / 2;
-  max-width: 90%;
-  max-height: 90%;
+  width: $max-layout-width / 1.8;
+  max-width: 95%;
+  max-height: 95%;
   overflow-y: scroll;
-  background-color: white;
-  border: 1px solid black;
+  background-color: tint($card-color, 50%);
+  border: 1px solid tint($card-color, 35%);
   box-shadow: -1px 0 1px rgba(133, 133, 133, 0.4),
               1px 0 1px rgba(133, 133, 133, 0.4),
               0 3px 2px rgba(133, 133, 133, 0.4);
@@ -132,7 +132,9 @@ header {
   padding: 0;
   li {
     display: block;
+    padding-bottom: 0.25em;
     margin-bottom: 0.75em;
+    border-bottom: 1px solid #dedddd;
     button {
       display: inline-block;
     }
