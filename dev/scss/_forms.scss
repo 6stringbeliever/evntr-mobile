@@ -177,7 +177,7 @@ a.btn {
 .btn-hero {
   @extend .btn;
   padding: 1em 2em;
-  color: black;
+  @include button-style(white, $button-primary-color);
 }
 
 .btn-close {

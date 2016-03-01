@@ -66,7 +66,13 @@ header {
 
 .card-event {
   @extend .card;
-  width: $max-layout-width / 3;
+  width: 100%;
+  @media screen and (min-width: 660px) {
+    width: 48%;
+  }
+  @media screen and (min-width: 980px) {
+    width: 32%
+  }
   h3 {
     margin-bottom: 2px;
   }
@@ -85,18 +91,36 @@ header {
 
 .hero {
   text-align: center;
+  margin-top: 1em;
+  margin-bottom: 2em;
+  padding: 0 1em;
   h2 {
     font-weight: normal;
-    margin-bottom: 36px;
+    font-size: 1.75em;
+    margin-bottom: 1em;
   }
   .hero-subhead {
-    font-size: 22px;
+    font-size: 1.25em;
+  }
+  @media screen and (min-width: 660px) {
+    margin-top: 2em;
+    margin-bottom: 4em;
+    padding: 0 2em;
+    h2 {
+      font-weight: normal;
+      font-size: 2.5em;
+      margin-bottom: 2em;
+    }
+    .hero-subhead {
+      font-size: 2em;
+    }
   }
 }
 
 .events-list {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   flex-wrap: wrap;
 }
 
