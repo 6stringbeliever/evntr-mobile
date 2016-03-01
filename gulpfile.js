@@ -38,7 +38,7 @@ gulp.task('sass', function () {
 gulp.task('sass-serve', function () {
   return gulp.src('dev/scss/*.scss')
              .pipe(sass.sync().on('error', sass.logError))
-             .pipe(gulp.dest('dev/css'))
+             .pipe(gulp.dest('dist/css'))
              .pipe(browserSync.stream());
 });
 
@@ -54,7 +54,13 @@ gulp.task('minifyjs', function() {
 gulp.task('js-serve', function() {
   return gulp.src('dev/js/lib/*.js')
              .pipe(concat('app.js'))
-             .pipe(gulp.dest('dev/js/'));
+             .pipe(gulp.dest('dist/js/'));
+});
+
+// Just move HTML on change
+gulp.task('html-serve', function() {
+  return gulp.src('dev/**/*.html')
+             .pipe(gulp.dest('dist/'));
 });
 
 // Move images with PNG or JPG extension
@@ -75,8 +81,10 @@ gulp.task('default', ['serve']);
 // Since this is for dev, we don't minify the js for debugging
 gulp.task('serve', function() {
 
+  gulp.start('html-serve', 'js-serve', 'sass-serve');
+
   browserSync.init({
-      server: "./dev"
+      server: "./dist"
   });
 
   // Watch Sass files and update
@@ -85,7 +93,7 @@ gulp.task('serve', function() {
   // Watch js files and lint
   gulp.watch('dev/js/lib/*.js', ['lint', 'js-serve']);
 
-  gulp.watch("dev/**/*.html").on('change', browserSync.reload);
+  gulp.watch('dev/**/*.html', ['html-serve']).on('change', browserSync.reload);
 });
 
 // Prepare for actual dist, clean the directory, then build and minify
