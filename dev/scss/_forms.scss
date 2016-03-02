@@ -91,30 +91,46 @@ textarea.inp-lrg {
 .inp-grp-compound {
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-start;
+  @media screen and (min-width: 400px) {
+    flex-direction: row;
+  }
 }
 
 .inp-grp-compound__left {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border-right: none;
+  @media screen and (min-width: 400px) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+  }
 }
 
 .inp-grp-compound__right {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  @media screen and (min-width: 400px) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
 }
 
 .inp-grp-compound__fill {
-  flex-grow: 1;
+  @media screen and (max-width: 399px) {
+    width: 100%;
+  }
+  @media screen and (min-width: 400px) {
+    flex-grow: 1;
+  }
+}
+
+p.inp-label {
+  margin-top: 0;
 }
 
 .inp-label-req {
   &:after {
     font-weight: bold;
     color: #c30909;
-    content: " *";
+    content: "\00a0*";
   }
 }
 
@@ -122,7 +138,7 @@ textarea.inp-lrg {
   &:after {
     color: #919191;
     font-size: 0.8em;
-    content: " (optional)";
+    content: "\00a0(optional)";
   }
 }
 

@@ -61,7 +61,7 @@
             <h3>When is the event?</h3>
             <div class="form-grp">
               <div class="form-grp__half">
-                <p class="inp-label-req">Start Time</p>
+                <p class="inp-label inp-label-req">Start Time</p>
                   <div class="inp-grp">
                     <label for="event-date-st">Date</label>
                     <input type="date" name="event-date-st" class="inp-lrg" id="event-date-st" required>
@@ -78,7 +78,7 @@
                 </div>
               </div>
               <div class="form-grp__half">
-                <p class="inp-label-req">End Time</p>
+                <p class="inp-label inp-label-req">End Time</p>
                 <div class="inp-grp">
                   <label for="event-date-end">Date</label>
                   <input type="date" name="event-date-end" class="inp-lrg" id="event-date-end" required>
@@ -115,7 +115,7 @@
             <div class="inp-grp">
               <label for="event-guest" class="inp-label-opt">Add a guest by email</label>
               <div class="inp-grp-compound">
-                <input type="email" id="event-guest" name="event-guest" class="inp-grp-compound__left  inp-grp-compound__fill novalidate" placeholder="guest@example.com"><button class="inp-grp-compound__right btn-function" id="add-guest" type="button">Add</button>
+                <input type="email" id="event-guest" name="event-guest" class="inp-grp-compound__left inp-grp-compound__fill novalidate" placeholder="guest@example.com"><button class="inp-grp-compound__right btn-function" id="add-guest" type="button">Add</button>
               </div>
               <div id="guest-list"></div>
             </div>
@@ -140,7 +140,7 @@
       <div class="inp-grp">
         <label for="event-near-loc"><b>Or:</b> Near location</label>
         <div class="inp-grp-compound">
-          <input type="text" name="event-near-loc" class="inp-lrg inp-grp-compound__left" id="event-near-loc" placeholder="Atlanta, GA or 30312">
+          <input type="text" name="event-near-loc" class="inp-grp-compound__left inp-grp-compound__fill" id="event-near-loc" placeholder="Atlanta, GA or 30312">
           <button type="button" class="btn-function inp-grp-compound__right" id="btn-near-loc">Search</button>
         </div>
       </div>
