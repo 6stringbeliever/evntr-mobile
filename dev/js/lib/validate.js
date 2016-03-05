@@ -5,9 +5,9 @@ var ValidationModule = function() {
   var globalAPI = {};
   var _cache = {};
   var _messages = {};
-  var formElements;
-  var form;
-  var button; 
+  var _formElements;
+  var _form;
+  var _button;
 
   /*
     Call this method to start the validation module. Gets all of
@@ -15,23 +15,28 @@ var ValidationModule = function() {
     until the inputs all validate using the HTML5 form validation
     API. Validates inputs after the first blur event on the input
     and then on all keyup events after that.
+
+    If HTML5 validation is not supported, nothing happens.
   */
   var initValidation = function(f, b) {
-    form = f;
-    button = b;
-    formElements = form.getElementsByTagName('input');
-    button.setAttribute('disabled', 'disabled');
-    form.addEventListener('keyup', _validateForm);
-    form.addEventListener('blur', function(e) {
-      _tripFocus(e.target.id);
-      _validateForm(e);
-    }, true);
-    form.addEventListener('change', function(e) {
-      _tripFocus(e.target.id);
-      _validateForm(e);
-    });
+    if (HTMLInputElement.prototype.checkValidity) {
+      _form = f;
+      _button = b;
+      _formElements = _form.elements;
+      _button.setAttribute('disabled', 'disabled');
+      _form.addEventListener('keyup', _validateForm);
+      _form.addEventListener('blur', _tripAndValidate, true);
+      _form.addEventListener('change', _tripAndValidate);
+      // Let's you call a custom event to validate a field on demand
+      _form.addEventListener('requestValidation', _tripAndValidate);
+    }
   };
 
+  /*
+    Replace the default HTML5 error messages with something
+    nicer, if you please. Takes an object in the format of
+    { 'html5 message': 'message you want to use instead'}
+  */
   function setCustomMessages(messages) {
     _messages = messages;
   }
@@ -45,18 +50,23 @@ var ValidationModule = function() {
     }
   }
 
+  function _tripAndValidate(e) {
+    _tripFocus(e.target.id);
+    _validateForm(e);
+  }
+
   function _validateForm(e) {
     if (_cache.hasOwnProperty(e.target.id) && _cache[e.target.id].haslostfocus) {
       _setValidityMessage(e.target);
     }
-    for (var i = 0; i < formElements.length; i++) {
-      if (!formElements[i].classList.contains('novalidate') &&
-        !formElements[i].checkValidity()) {
-        button.setAttribute('disabled', 'disabled');
+    for (var i = 0; i < _formElements.length; i++) {
+      if (!_formElements[i].classList.contains('novalidate') &&
+        !_formElements[i].checkValidity()) {
+        _button.setAttribute('disabled', 'disabled');
         return;
       }
     }
-    button.removeAttribute('disabled');
+    _button.removeAttribute('disabled');
   }
 
   function _setValidityMessage(inputElement) {
