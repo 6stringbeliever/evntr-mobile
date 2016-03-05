@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head lang="en">
+    <script>
+      /* Load awesome fonts */
+      WebFontConfig = {
+        google: { families: [ 'Lato:300,700,300italic,700italic:latin', 'Lobster::latin' ] }
+      };
+      (function() {
+        var wf = document.createElement('script');
+        wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+      })();
+      /* Test for js */
+      (function(h){
+        h.className = h.className.replace('no-js', 'js')
+      })(document.documentElement)
+    </script>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Evntr - A Fake Events App</title>

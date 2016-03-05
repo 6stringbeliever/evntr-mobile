@@ -192,8 +192,11 @@ a.btn {
 
 .btn-hero {
   @extend .btn;
+  font-size: 1.25em;
+  text-transform: uppercase;
+  margin: 0.5em 0.25em;
   padding: 1em 2em;
-  @include button-style(white, $button-primary-color);
+  @include button-style(white, rgba(7, 41, 145, 0.75));
 }
 
 .btn-close {
