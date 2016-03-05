@@ -83,45 +83,42 @@
         backend.isUserLoggedIn);
       LogoutButton(document.getElementById('log-out'), backend, loggedInMod);
 
-      if (HTMLInputElement.prototype.checkValidity) {
-        var pwInput = document.getElementById('user-pw');
-        var validationModule = ValidationModule();
+      var pwInput = document.getElementById('user-pw');
+      var validationModule = ValidationModule();
 
-        pwInput.addEventListener('keyup', function(e) {
-          var message = '';
-          var errors = [];
-          var pwText = e.target.value;
-          if (pwText.length < 10) {
-            errors.push('Must be at least 10 characters');
+      pwInput.addEventListener('keyup', function(e) {
+        var message = '';
+        var errors = [];
+        var pwText = e.target.value;
+        if (pwText.length < 10) {
+          errors.push('Must be at least 10 characters');
+        }
+        if (!/[A-Z]/.test(pwText)) {
+          errors.push('Requires an uppercase letter');
+        }
+        if (!/[a-z]/.test(pwText)) {
+          errors.push('Requires a lowercase letter');
+        }
+        if (!/[0-9]/.test(pwText)) {
+          errors.push('Requires a number');
+        }
+        if (!/[!@#$%&]/.test(pwText)) {
+          errors.push('Requires one of these special characters: ! @ # $ % &');
+        }
+        if (errors.length === 1) {
+          message = errors[0];
+        } else if (errors.length > 1) {
+          message = 'Password must meet these requirements:<ul>';
+          for (var i = 0; i < errors.length; i++) {
+            message += '<li>' + errors[i] + '</li>';
           }
-          if (!/[A-Z]/.test(pwText)) {
-            errors.push('Requires an uppercase letter');
-          }
-          if (!/[a-z]/.test(pwText)) {
-            errors.push('Requires a lowercase letter');
-          }
-          if (!/[0-9]/.test(pwText)) {
-            errors.push('Requires a number');
-          }
-          if (!/[!@#$%&]/.test(pwText)) {
-            errors.push('Requires one of these special characters: ! @ # $ % &');
-          }
-          if (errors.length === 1) {
-            message = errors[0];
-          } else if (errors.length > 1) {
-            message = 'Password must meet these requirements:<ul>';
-            for (var i = 0; i < errors.length; i++) {
-              message += '<li>' + errors[i] + '</li>';
-            }
-            message += '</ul>';
-          }
-          e.target.setCustomValidity(message);
-        });
+          message += '</ul>';
+        }
+        e.target.setCustomValidity(message);
+      });
 
-
-        validationModule.initValidation(document.getElementById('signup-form'),
-          document.getElementById('submit'));
-      }
+      validationModule.initValidation(document.getElementById('signup-form'),
+        document.getElementById('submit'));
 
       /* Wire up the show/hide password module */
       (function(inp, but) {
