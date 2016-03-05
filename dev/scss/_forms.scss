@@ -1,12 +1,13 @@
-input {
+input,
+textarea {
   font-size: 1.125em;
   padding: 0.375em;
+  border: 1px solid #bfbfbf;
 }
 
 input,
 button,
 a.btn {
-  border: 1px solid #bfbfbf;
   border-radius: 4px;
 }
 
@@ -173,7 +174,7 @@ a.btn {
 }
 
 .btn {
-  padding: 0.45em 1em;
+  padding: 0.425em 1em;
   outline: none;
   &:disabled {
     @include button-style(#5d5d5d, #a4a4a4);
