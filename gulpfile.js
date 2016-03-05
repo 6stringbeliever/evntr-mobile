@@ -81,7 +81,7 @@ gulp.task('default', ['serve']);
 // Since this is for dev, we don't minify the js for debugging
 gulp.task('serve', function() {
 
-  gulp.start('html-serve', 'js-serve', 'sass-serve');
+  gulp.start('html-serve', 'js-serve', 'sass-serve', 'moveimages');
 
   browserSync.init({
       server: "./dist"
