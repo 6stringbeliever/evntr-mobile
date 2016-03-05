@@ -54,7 +54,8 @@ gulp.task('minifyjs', function() {
 gulp.task('js-serve', function() {
   return gulp.src('dev/js/lib/*.js')
              .pipe(concat('app.js'))
-             .pipe(gulp.dest('dist/js/'));
+             .pipe(gulp.dest('dist/js/'))
+             .pipe(browserSync.stream());
 });
 
 // Just move HTML on change
