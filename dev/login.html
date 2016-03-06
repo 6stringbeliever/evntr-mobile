@@ -42,15 +42,17 @@
     <main class="container-horizontal">
       <section class="formsection">
         <h2>Log In to Evntr</h2>
-        <form action="">
+        <form action="" id="login-form">
           <div class="inp-grp-horiz">
             <label for="user-email">Email</label>
-            <input type="email" name="user-email" class="inp-lrg" id="user-email" placeholder="e.g., sue@example.com" autocomplete="email" autofocus>
+            <input type="email" name="user-email" class="inp-lrg" id="user-email" placeholder="e.g., sue@example.com" autocomplete="email" required autofocus>
           </div>
+          <p id="user-email-error" class="error"></p>
           <div class="inp-grp-horiz">
             <label for="user-pw">Password</label>
-            <input type="password" name="user-pw" class="inp-lrg" id="user-pw">
+            <input type="password" name="user-pw" class="inp-lrg" id="user-pw" required>
           </div>
+          <p id="user-pw-error" class="error"></p>
           <input type="submit" id="submit" class="btn-primary btn-lrg" value="Log in">
         </form>
       </section>
@@ -61,6 +63,9 @@
       var loggedInMod = LoggedIn(document.documentElement,
         backend.isUserLoggedIn);
       LogoutButton(document.getElementById('log-out'), backend, loggedInMod);
+      var validation = ValidationModule();
+      validation.initValidation(document.getElementById('login-form'),
+        document.getElementById('submit'));
 
       // Submit module
       (function(backend, emailField, pwField, submitButton) {
