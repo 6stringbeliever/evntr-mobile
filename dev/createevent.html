@@ -55,8 +55,9 @@
             <p class="error"></p>
           </div>
           <div class="inp-grp">
-            <label for="event-type" class="inp-label-opt">What is the purpose of the event?</label>
-            <input list="event-type-list" name="event-type" id="event-type" class="inp-lrg" placeholder="e.g., Birthday, Business Meeting">
+            <label for="event-type" class="inp-label-req">What is the purpose of the event?</label>
+            <input list="event-type-list" name="event-type" id="event-type" class="inp-lrg" placeholder="e.g., Birthday, Business Meeting" required>
+            <p class="error"></p>
             <datalist id="event-type-list">
               <option value="Birthday" />
               <option value="Book Club" />
@@ -71,36 +72,16 @@
           <hr />
           <div id="event-date-time">
             <h3>When is the event?</h3>
-            <div class="form-grp">
-              <div class="form-grp__half">
-                <p class="inp-label inp-label-req">Start Time</p>
-                  <div class="inp-grp">
-                    <label for="event-date-st">Date</label>
-                    <input type="date" name="event-date-st" class="inp-lrg" id="event-date-st" required>
-                    <p class="error"></p>
-                  </div>
-                  <div class="inp-grp">
-                    <label for="event-time-st">Time</label>
-                    <input type="time" name="event-time-st" class="inp-lrg" id="event-time-st">
-                    <p class="error"></p>
-                  </div>
-                <div class="inp-grp">
-                  <input type="checkbox" id="event-all-day" name="event-all-day">
-                  <label for="event-all-day">All day?</label>
-                </div>
+            <div class="inp-grp">
+              <div class="inp-grp">
+                <label for="event-st-time" class="inp-label-req">Start time</label>
+                <input type="datetime-local" name="event-st-time" id="event-st-time" class="inp-lrg" required>
+                <p class="error"></p>
               </div>
-              <div class="form-grp__half">
-                <p class="inp-label inp-label-req">End Time</p>
-                <div class="inp-grp">
-                  <label for="event-date-end">Date</label>
-                  <input type="date" name="event-date-end" class="inp-lrg" id="event-date-end" required>
-                  <p class="error"></p>
-                </div>
-                <div class="inp-grp">
-                  <label for="event-time-end">Time</label>
-                  <input type="time" name="event-time-end" class="inp-lrg" id="event-time-end">
-                  <p class="error"></p>
-                </div>
+              <div class="inp-grp">
+                <label for="event-end-time" class="inp-label-req">End time</label>
+                <input type="datetime-local" name="event-end-time" id="event-end-time" class="inp-lrg" required>
+                <p class="error"></p>
               </div>
             </div>
           </div>
@@ -116,8 +97,9 @@
               <p class="error"></p>
             </div>
             <div class="inp-grp">
-              <label for="event-loc-addr" class="inp-label-opt">Enter address</label>
-              <input type="text" name="event-loc-addr" id="event-loc-addr" class="inp-lrg" placeholder="e.g., 855 Peachtree St.">
+              <label for="event-loc-addr" class="inp-label-req">Enter address</label>
+              <input type="text" name="event-loc-addr" id="event-loc-addr" class="inp-lrg" placeholder="e.g., 855 Peachtree St." required>
+              <p class="error"></p>
             </div>
             <input type="hidden" name="event-loc-pic" id="event-loc-pic">
           </div>
@@ -125,11 +107,11 @@
           <div>
             <h3>Guest List</h3>
             <div class="inp-grp">
-              <label for="event-guest" class="inp-label-opt">Add a guest by email</label>
-              <div class="inp-grp-compound">
-                <input type="email" id="event-guest" name="event-guest" class="inp-grp-compound__left inp-grp-compound__fill novalidate" placeholder="guest@example.com"><button class="inp-grp-compound__right btn-function" id="add-guest" type="button">Add</button>
+              <div class="inp-grp">
+                <label for="event-guests" class="inp-label-req">Enter your guest list</label>
+                <textarea id="event-guests" class="inp-lrg" name="event-guests" required></textarea>
+                <p class="error"></p>
               </div>
-              <div id="guest-list"></div>
             </div>
           </div>
           <hr />
@@ -185,153 +167,32 @@
       LogoutButton(document.getElementById('log-out'), backend, loggedInMod);
       var guestList;
 
+      // Make sure event ends after it starts
+      (function(startTime, endTime) {
+
+        startTime.addEventListener('keyup', checkTimeOrder);
+        endTime.addEventListener('keyup', checkTimeOrder);
+        startTime.addEventListener('change', checkTimeOrder);
+        endTime.addEventListener('change', checkTimeOrder);
+
+        function checkTimeOrder(e) {
+          endTime.setCustomValidity('');
+          if (startTime.checkValidity() && endTime.checkValidity() &&
+            isLater(new Date(startTime.value), new Date(endTime.value))) {
+            endTime.setCustomValidity('Events can\'t end before they start.');
+          } else {
+            endTime.dispatchEvent(new Event('requestValidation', { 'bubbles': true }));
+          }
+        }
+
+        function isLater(timeA, timeB) {
+          return timeA > timeB;
+        }
+      })(document.getElementById('event-st-time'),
+         document.getElementById('event-end-time'));
+
       validation.initValidation(document.getElementById('create-event'),
         submitButton);
-
-      // Guest list module
-      (function(addButton, emailField, listDiv) {
-        'use strict';
-
-        var guests = { name: [],
-          index: function() {
-            return window['INDEX'];
-          },
-          incIndex: function() {
-            ++window['INDEX'];
-          },
-          resetIndex: function() {
-            window['INDEX'] = 0;
-          }
-        };
-
-        var templ = document.getElementById('tmpl-guest-list').innerHTML;
-        Mustache.parse(templ);
-
-        /* Resetting guestList here because this is the main spot
-           we know that the guest list has been updated by any function.
-        */
-        var getGuestListHTML = function() {
-          guests.resetIndex();
-          guestList = guests;
-          return Mustache.render(templ, guests);
-        };
-
-        addButton.setAttribute('disabled', 'true');
-
-        emailField.addEventListener('keyup', function() {
-          if (emailField.value !== '' && emailField.checkValidity()) {
-            addButton.removeAttribute('disabled');
-          } else {
-            addButton.setAttribute('disabled', 'true');
-          }
-        });
-
-        addButton.addEventListener('click', function() {
-          if (emailField.checkValidity()) {
-            guests.name.push(emailField.value);
-            emailField.value = '';
-            listDiv.innerHTML = getGuestListHTML();
-          }
-        });
-
-        listDiv.addEventListener('click', function(e) {
-          var reg = /del-guest-([0-9]+)/;
-          var match = reg.exec(e.target.id);
-          if (match !== null) {
-            guests.name.splice(match[1], 1);
-            listDiv.innerHTML = getGuestListHTML();
-          }
-        });
-
-      })(document.getElementById('add-guest'),
-        document.getElementById('event-guest'),
-        document.getElementById('guest-list'));
-
-      // Event time module
-      (function(startDateField, startTimeField, endDateField,
-        endTimeField, allDayField, dateTimeSection) {
-
-        var startTime = resetStartTime();
-        var endTime = resetEndTime(startTime);
-
-        setDateTimeFields(startTime, startDateField, startTimeField);
-        setDateTimeFields(endTime, endDateField, endTimeField);
-
-        allDayField.addEventListener('click', function(e) {
-          if (e.target.checked) {
-            startTimeField.parentNode.style.display = 'none';
-            endTimeField.parentNode.style.display = 'none';
-          } else {
-            startTimeField.parentNode.style.display = 'block';
-            endTimeField.parentNode.style.display = 'block';
-          }
-        });
-
-        dateTimeSection.addEventListener('focusout', function(e) {
-          var startTime;
-          var endTime;
-          if (!validateEndTime()) {
-            startTime = getDateFromFields(startDateField, startTimeField);
-            endTime = resetEndTime(startTime);
-            setDateTimeFields(endTime, endDateField, endTimeField);
-          }
-        });
-
-        function validateEndTime() {
-          var st = getDateFromFields(startDateField, startTimeField);
-          var end = getDateFromFields(endDateField, endTimeField);
-          return st <= end;
-        }
-
-        function getDateFromFields(dateField, timeField) {
-          return new Date(dateField.value + " " + timeField.value);
-        }
-
-        function setDateTimeFields(dateVal, dateField, timeField) {
-          dateField.value = getDateString(dateVal);
-          timeField.value = getTimeString(dateVal);
-        }
-
-        function resetStartTime() {
-          var now = new Date();
-          if (now.getMinutes() >= 29) {
-            now.setHours(now.getHours() + 1);
-            now.setMinutes(0);
-          } else {
-            now.setMinutes(30);
-          }
-          now.setSeconds(0);
-          return now;
-        }
-
-        // Returns startTime plus 30 minutes
-        function resetEndTime(startTime) {
-          return new Date(startTime.getTime() + 1800000);
-        }
-
-        function getDateString(date) {
-          var month = date.getMonth() + 1;
-          var monthSt = (month < 10) ? '0' + month : '' + month;
-          var day = date.getDate();
-          var daySt = (day < 10) ? '0' + day : '' + day;
-          return date.getFullYear() + '-' + monthSt + '-' + daySt;
-        }
-
-        function getTimeString(time) {
-          var hours = time.getHours();
-          var hoursSt = (hours < 10) ? '0' + hours : '' + hours;
-          var minutes = time.getMinutes();
-          var minutesSt = (minutes < 10) ? '0' + minutes : '' + minutes;
-          return hoursSt + ':' + minutesSt;
-        }
-
-      })(document.getElementById('event-date-st'),
-        document.getElementById('event-time-st'),
-        document.getElementById('event-date-end'),
-        document.getElementById('event-time-end'),
-        document.getElementById('event-all-day'),
-        document.getElementById('event-date-time')
-      );
 
       // Event location module
       (function(btnNearMe, inpNearLoc, btnNearLoc, inpLocation, inpAddr,
@@ -398,9 +259,11 @@
 
         function fillEventLocation(name, address) {
           inpLocation.value = name;
-          inpLocation.dispatchEvent(new Event('change', { bubbles: true }));
+          inpLocation.dispatchEvent(new Event('requestValidation',
+            { 'bubbles': true }));
           inpAddr.value = address;
-          inpAddr.dispatchEvent(new Event('change', { bubbles: true }));
+          inpAddr.dispatchEvent(new Event('requestValidation',
+            { 'bubbles': true }));
         }
 
         function getSuggestions() {
@@ -497,22 +360,13 @@
           'July', 'August', 'September', 'October', 'November', 'December'];
 
         submitButton.addEventListener('click', function(e) {
-          var date;
-          if (document.getElementById('event-all-day').checked) {
-            date = {
-              startDate: getDateString(document.getElementById('event-date-st'), document.getElementById('event-time-st')),
-              endDate: getDateString(document.getElementById('event-date-end'), document.getElementById('event-time-end')),
-              allDay: true
-            };
-          } else {
-            date = {
-              startDate: getDateString(document.getElementById('event-date-st'), document.getElementById('event-time-st')),
-              startTime: getTimeString(document.getElementById('event-date-st'), document.getElementById('event-time-st')),
-              endDate: getDateString(document.getElementById('event-date-end'), document.getElementById('event-time-end')),
-              endTime: getTimeString(document.getElementById('event-date-end'), document.getElementById('event-time-end')),
-              allDay: false
-            };
-          }
+          var date = {
+            startDate: getDateString(document.getElementById('event-st-time')),
+            startTime: getTimeString(document.getElementById('event-st-time')),
+            endDate: getDateString(document.getElementById('event-end-time')),
+            endTime: getTimeString(document.getElementById('event-end-time')),
+            allDay: false
+          };
           var event = {
             name: document.getElementById('event-name').value,
             host: document.getElementById('event-host').value,
@@ -523,18 +377,18 @@
               address: document.getElementById('event-loc-addr').value,
               picture: null
             },
-            guests: guestList,
+            guests: document.getElementById('event-guests').value,
             message: document.getElementById('event-msg').value
           };
           backend.addEvent(event);
 
-          function getDateString(dateField, timeField) {
-            var date = new Date(dateField.value + " " + timeField.value);
+          function getDateString(dateField) {
+            var date = getUTCFromDateTimeLocal(dateField);
             return months[date.getMonth()] + ' ' + date.getDate() + ", " + date.getFullYear();
           }
 
-          function getTimeString(dateField, timeField) {
-            var date = new Date(dateField.value + ' ' + timeField.value);
+          function getTimeString(dateField) {
+            var date = getUTCFromDateTimeLocal(dateField);
             var hours;
             var m = date.getMinutes();
             var minutes = (m < 10) ? '0' + m : '' + m;
@@ -553,6 +407,13 @@
               ampm = 'pm';
             }
             return hours + ':' + minutes + ' ' + ampm;
+          }
+
+          /*
+            http://stackoverflow.com/questions/28234572/html5-datetime-local-chrome-how-to-input-datetime-in-current-time-zone?rq=1
+          */
+          function getUTCFromDateTimeLocal(field) {
+            return new Date(field.value.replace('T', ' ').replace('-', '/'));
           }
 
         });
